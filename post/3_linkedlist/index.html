@@ -240,40 +240,116 @@
 
 </div>
 
-  <h2 id="单向链表">单向链表</h2>
+  <h2 id="1-单向链表">1. 单向链表</h2>
 
-<h3 id="1-实现理论">1.  实现理论</h3>
-
-<blockquote>
-<p><strong>注意：</strong> 暂时不考虑编号排序问题</p>
-</blockquote>
+<h3 id="概念">概念</h3>
 
 <ul>
-<li>
-<br /></li>
+<li>n个节点链结成的一个链表，即为线性表的链式存储结构。因为此链表中的每个节点中只包含一个数据域和一个指针域，所以叫做单链表。</li>
+<li>链表中第一个节点的存储位置叫做头指针</li>
+<li>任意一个节点的指针域中存储了下一个节点的地址</li>
 </ul>
 
-<h3 id="2-编程实现">2.  编程实现</h3>
+<h3 id="实现理论-关键部分">实现理论(关键部分)</h3>
+
+<ul>
+<li>头节点是不能被修改的，因此遍历链表时需要用到临时变量temp</li>
+<li>由于是单向链表，执行增删操作时，需将temp定位到待操作位置的前一个；在循环遍历中通过标识flag来确定是否找到操作位置</li>
+</ul>
+
+<h3 id="编程实现">编程实现</h3>
 
 <pre><code class="language-java">
 class SinglyLinkedList{
     //初始化一个头节点，不存放数据；头节点不能动
     private Node headNode =new Node(0,&quot;&quot;,&quot;&quot;);
 
-    //在链表尾部插入新节点
-    public void add(Node newNode){
+    //始终在链表尾部插入新节点
+    public void addLast(Node newNode){
         //首先遍历链表找到链表尾部
         Node temp = headNode;
         while (true){
             if (temp.next == null){
                 break;
             }
-            else {
-                temp = temp.next;
-            }
+            temp = temp.next;
         }
         //while循环结束时，temp就指向了链表的最后
         temp.next = newNode;
+    }
+    
+    //根据节点中的编号顺序，在正确的位置插入新节点
+    public void addByOrder(Node newNode){
+        Node temp = headNode;
+        boolean flag = false;
+        while (true){
+            if (temp.next == null){
+                break;
+            }
+            if (temp.next.num &gt; newNode.num){
+                break;
+            } else if (temp.next.num == newNode.num){
+                flag = true;
+                break;
+            }
+            temp = temp.next;
+        }
+        if (flag){
+            System.out.println(&quot;编号已存在&quot;);
+        } else {
+            newNode.num = temp.next;
+            temp.next = newNode;
+        }
+    }
+    
+    //根据新节点中的编号修改节点信息，编号不允许被修改
+    public void update(Node newNode){
+        if (headNode.next == null){
+            System.out.println(&quot;链表为空&quot;);
+            return;
+        }
+        Node temp = headNode.next;
+        boolean flag = false;
+        while (true){
+            if (temp == null){//检查是否以及遍历到链表尾
+                flag = false;
+                System.out.println(&quot;链表中没有该编号&quot;);
+                break;
+            }
+            if (temp.num == newNode.num){
+                flag = true;
+                break;
+            }
+            temp = temp.next;
+        }
+        if (flag){
+            temp.name = newNode.name;
+            temp.nickName = newNode.nickName;
+        }
+    }
+    
+    //根据编号移除节点
+    public void remove(int num){
+        if (headNode.next == null){
+            System.out.println(&quot;链表为空&quot;);
+            return;
+        }
+        Node temp = headNode;
+        boolean flag = false;
+        while (true){
+            if (temp == null){
+                System.out.println(&quot;链表中没有该编号的节点&quot;);
+                break;
+            }
+            if (temp.next.num == num){
+                flag = true;
+                break;
+            }
+            temp = temp.next;
+        }
+        if (flag){
+            temp.next = temp.next.next;
+        }
     }
 
     //显示链表
