@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <title>Java数据结构与算法: SparseArray &middot; Mike Chen</title>
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://alpha-mikechen.github.io/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://alpha-mikechen.github.io/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="https://alpha-mikechen.github.io/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/androidstudio.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://alpha-mikechen.github.ioimg/favicon.ico" type="image/x-icon" />
+
+  
+    
+        <link rel="stylesheet" href="https://alpha-mikechen.github.iocss/my.css">
+    
+  
+  
+    
+        <script src="https://alpha-mikechen.github.iojs/my.js"></script>
+    
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+  <a class="pure-menu-heading brand" href="https://alpha-mikechen.github.io/">Mike Chen</a>
+
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/about/"><i class='fa fa-user fa-fw'></i>About</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/contact/"><i class='fa fa-phone fa-fw'></i>Contact</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="http://weibo.com/*" rel="me" target="_blank"><i class="fa fa-weibo fa-fw"></i>Weibo</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://youtube.com/user/*" rel="me" target="_blank"><i class="fa fa-youtube-square fa-fw"></i>YouTube</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/alpha-mikechen" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2018. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>Java数据结构与算法: SparseArray</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>15 Jul 2019, 17:15</time>
+  </div>
+
+  
+
+  
+
+  
+
+</div>
+
+  <h2 id="概念">概念</h2>
+
+<p>当一个数组中大部分的元素为同一值时，可以用稀疏数组来保存该数组，从而缩小程序规模。</p>
+
+<p>稀疏数组共3列，稀疏数组第一行记录原始数组一共几行几列，以及有效值个数。剩余行分别记录有效值出现在原始数组中的行列位置，及有效值本身。</p>
+
+<hr />
+
+<h2 id="稀疏数组的实现">稀疏数组的实现</h2>
+
+<h3 id="1-实现理论">1.  实现理论</h3>
+
+<ul>
+<li><p>二维数组 转 稀疏数组</p>
+
+<ol>
+<li>遍历原始数组，获取有效数据的个数 sum</li>
+<li>根据sum创建稀疏数组 sparseArr[sum+1][3]</li>
+<li>将原始二位数组的有效数据存入稀疏数组</li>
+<li>将稀疏数组存入文件
+<br /></li>
+</ol></li>
+
+<li><p>稀疏数组 转 二维数组</p>
+
+<ol>
+<li>读取文件，并恢复成稀疏数组</li>
+<li>读取稀疏数组第一行，根据数据创建二维数组</li>
+<li>读取稀疏数组剩余行，根据数据赋值给二维数组
+<br /></li>
+</ol></li>
+</ul>
+
+<h3 id="2-编程实现">2.  编程实现</h3>
+
+<ul>
+<li>二维数组 转 稀疏数组</li>
+</ul>
+
+<pre><code class="language-java">//创建二维数组棋盘，2代表黑棋，1代表白棋
+int [][] chessArr = new int [11][11];
+int rowNum = chessArr.length;
+int columnNum = chessArr[0].length;
+chessArr [1][2] = 2;
+chessArr [2][3] = 1;
+
+//获取有效值个数 
+int sum = 0;
+for(int i=0;i&lt;rowNum;i++){
+    for(int j=0;j&lt;columnNum;j++){
+        if(chessArr[i][j]!=0){
+            sum++;
+        }
+    }
+}
+
+//创建稀疏数组
+//第一行存入原始数组行列总数，有效值的个数
+//剩余行存入有效值所在行列位置，及有效值本身
+//使用count来使行号自动递增
+int [][] sparseArr =new int [sum+1][3];
+sparseArr [0][0] = rowNum;
+sparseArr [0][1] = columnNum;
+sparseArr [0][2] = sum;
+int count =0 ;
+for(int i=0;i&lt;rowNum;i++){
+    for(int j=0;j&lt;columnNum;j++){
+        if(chessArr[i][j]!=0){
+            count++;
+            sparseArr [count][0] = i;
+            sparseArr [count][1] = j;
+            sparseArr [count][2] = chessArr[i][j];
+        }
+    }
+}
+
+//将稀疏数组写入文件
+BufferedWriter bw = new BufferedWriter(new FileWriter(&lt;fileName&gt;));
+for(int [] row:sparseArr){
+    for(int data:row){
+        bw.write(data+&quot;\t&quot;);
+    }
+    bw.newLine();
+}
+bw.close();
+</code></pre>
+
+<ul>
+<li>稀疏数组 转 二维数组</li>
+</ul>
+
+<pre><code class="language-java">//从文件中读取稀疏数组
+BufferedReader br1  = new BufferedReader(new FileReader(&lt;fileName&gt;));
+BufferedReader br2  = new BufferedReader(new FileReader(&lt;fileName&gt;));
+String str = null;
+
+//获取稀疏数组共几行
+int newRowNum = 0;
+while((str = br1.readLine())!=null){
+    newRowNum++;
+}
+br1.close();
+
+//创建并初始化稀疏数组
+int [][] sparseArr2 = new int [newRowNum][3];
+count = 0;
+String [] line = null;
+while((str = br2.readLine())!=null){
+    line = str.split(&quot;\t&quot;);
+    for(int j=0;j&lt;3;j++){
+        sparseArr2[count][j] = Integer.parseInt(line[j]);
+    }
+    count++;
+br2.close();
+    
+//数组恢复
+int [][] chessArr2 = new int [sparseArr2[0][0]][sparseArr2[0][1]];
+for(int i=1;i&lt;sparseArr.length;i++){
+    chessArr2 [sparseArr2[i][0]][sparseArr2[i][1]] = sparseArr2[i][2];
+}
+</code></pre>
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="next">
+      <a href="https://alpha-mikechen.github.io/post/2_queue/">Java数据结构与算法: Queue</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+    <a href="https://alpha-mikechen.github.io/post/2_queue/"><i class="fa fa-chevron-right"></i></a>
+    
+  </div>
+</div>
+
+
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'Your Disqus shortname';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</div>
+
+</div>
+</div>
+<script src="https://alpha-mikechen.github.iojs/ui.js"></script>
+<script src="https://alpha-mikechen.github.iojs/menus.js"></script>
+
+
+<script>
+  
+  if (window.location.hostname != "localhost") {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'Your Google Analytics tracking ID', 'auto');
+    ga('send', 'pageview');
+  }
+</script>
+
+
+
+
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="\/\/analytics.example.com\/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId',  2 ]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.example.com/piwik.php?idsite=2" style="border:0;" alt="" /></p></noscript>
+
+
+
+</body>
+</html>
+
