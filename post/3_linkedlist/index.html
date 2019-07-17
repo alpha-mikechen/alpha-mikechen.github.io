@@ -259,11 +259,45 @@
 
 <h3 id="编程实现">编程实现</h3>
 
-<pre><code class="language-java">
-class SinglyLinkedList{
+<h4 id="首先定义一个节点类-包含数据域和节点域">首先定义一个节点类,包含数据域和节点域</h4>
+
+<pre><code class="language-java">class Node{
+    int num;
+    String  name;
+    String  nickName;
+    Node next;
+
+    public Node(int num, String name, String nickName) {
+        this.num = num;
+        this.name = name;
+        this.nickName = nickName;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;Node{&quot; +
+                &quot;num=&quot; + num +
+                &quot;, name='&quot; + name + '\'' +
+                &quot;, nickName='&quot; + nickName + '\'' +
+                '}';
+    }
+}
+</code></pre>
+
+<h4 id="其次定义单链表表操作实现类-提供以下方法">其次定义单链表表操作实现类, 提供以下方法:</h4>
+
+<ul>
+<li>addLast</li>
+<li>addByOrder</li>
+<li>update</li>
+<li>remove</li>
+<li>showAll</li>
+</ul>
+
+<pre><code class="language-java">class SinglyLinkedList{
     //初始化一个头节点，不存放数据；头节点不能动
     private Node headNode =new Node(0,&quot;&quot;,&quot;&quot;);
-
+    
     //始终在链表尾部插入新节点
     public void addLast(Node newNode){
         //首先遍历链表找到链表尾部
@@ -351,7 +385,7 @@ class SinglyLinkedList{
             temp.next = temp.next.next;
         }
     }
-
+    
     //显示链表
     public void show(){
         //首先判断头节点的指针域是否为空
@@ -374,29 +408,6 @@ class SinglyLinkedList{
         }
     }
 }
-
-class Node{
-    int num;
-    String  name;
-    String  nickName;
-    Node next;
-
-    public Node(int num, String name, String nickName) {
-        this.num = num;
-        this.name = name;
-        this.nickName = nickName;
-    }
-
-    @Override
-    public String toString() {
-        return &quot;Node{&quot; +
-                &quot;num=&quot; + num +
-                &quot;, name='&quot; + name + '\'' +
-                &quot;, nickName='&quot; + nickName + '\'' +
-                '}';
-    }
-}
-
 </code></pre>
 
   
