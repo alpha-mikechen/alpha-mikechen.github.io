@@ -290,7 +290,7 @@
 <li>定义一个新的空节点reverseHead，每次遍历原链表时都顺序摘掉一个节点放在reverseHead有效节点的最前端</li>
 </ul>
 
-<pre><code class="language-java">public static void reverse(Node headNode){
+<pre><code class="language-java">public void reverse(){
     //如果头节点为空，或者链表中只有一个有效节点，则无需反转
     if (headNode.next == null || headNode.next.next == null){
         return;
@@ -302,7 +302,7 @@
         tempNext = temp.next;
         temp.next = reverseHead.next;
         reverseHead.next = temp;
-        temp = tempNext;
+        temp = tempNext;//
     }
     headNode.next = reverseHead.next;
 }
@@ -310,16 +310,61 @@
 
 <hr />
 
-<h2 id="4-从尾到头打印单链表-方法1-反向遍历-方法2-stack栈">4. 从尾到头打印单链表 (方法1: 反向遍历; 方法2: Stack栈)</h2>
+<h2 id="4-不破坏原链表结构的条件下-反向打印单链表-方法-stack栈">4. 不破坏原链表结构的条件下，反向打印单链表 (方法: Stack栈)</h2>
 
-<pre><code class="language-java">
+<pre><code class="language-java">public void showReverse(){
+    if (headNode.next == null || headNode.next.next == null){
+        return;
+    }
+    //利用栈先进后出的特点
+    //将节点push进栈
+    Stack &lt;Node&gt; stack = new Stack&lt;&gt;();
+    Node temp = headNode;
+    while (temp.next != null){
+        stack.push(temp.next);
+        temp = temp.next;
+    }
+    //栈内元素pop出栈
+    while (stack.size()&gt;0){
+        System.out.println(stack.pop().toString());
+    }
+}
 </code></pre>
 
 <hr />
 
 <h2 id="5-合并两个有序单链表-合并后依然有序">5. 合并两个有序单链表，合并后依然有序</h2>
 
-<pre><code class="language-java">
+<blockquote>
+<p><strong>注：</strong> combine方法中没有考虑两个链表都为空或任意一个为空的情况。比较简单没有写入</p>
+</blockquote>
+
+<pre><code class="language-java">public void combine(SinglyLinkedList secondSinglyLinkedList){
+    int length_1 = getLength();
+    int length_2 = secondSinglyLinkedList.getLength();
+    //对于每个单链表仍然需要两个辅助指针
+    //一个指向当前节点，一个指向下一个节点。方便摘取和遍历
+    Node temp_1 = headNode.next;
+    Node temp_1Next = null;
+    Node temp_2 = secondSinglyLinkedList.getHeadNode().next;
+    Node temp_2Next = null;
+    if(length_1 &gt;= length_2){
+        while (temp_2!=null){
+            temp_2Next = temp_2.next;
+            addByOrder(temp_2);
+            temp_2 = temp_2Next;
+        }
+        showAll();
+    }
+    else {
+        while (temp_1!=null){
+            temp_1Next = temp_1.next;
+            secondSinglyLinkedList.addByOrder(temp_1);
+            temp_1 = temp_1Next;
+        }
+        secondSinglyLinkedList.showAll();
+    }
+}
 </code></pre>
 
 <hr />
