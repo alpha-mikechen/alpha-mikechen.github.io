@@ -282,13 +282,15 @@
 
 <h2 id="3-单链表的反转">3. 单链表的反转</h2>
 
-<pre><code class="language-java">/**
- * 思路：
- * 定义一个辅助节点temp，帮助遍历原链表
- * 定义一个辅助节点tempNext，其指向temp节点的下一个，帮助摘取temp节点
- * 定义一个新的空节点reverseHead，每次遍历原链表时都顺序摘下一个节点放在reverseHead有效节点的最前端
- */
-public static void reverse(Node headNode){
+<h3 id="思路">思路</h3>
+
+<ul>
+<li>定义一个辅助节点temp，帮助遍历原链表</li>
+<li>定义一个辅助节点tempNext，其指向temp节点的下一个，帮助摘取temp节点</li>
+<li>定义一个新的空节点reverseHead，每次遍历原链表时都顺序摘掉一个节点放在reverseHead有效节点的最前端</li>
+</ul>
+
+<pre><code class="language-java">public static void reverse(Node headNode){
     //如果头节点为空，或者链表中只有一个有效节点，则无需反转
     if (headNode.next == null || headNode.next.next == null){
         return;
@@ -306,9 +308,11 @@ public static void reverse(Node headNode){
 }
 </code></pre>
 
-<p><img src="https://alpha-mikechen.github.io/Users/mike/myBlog/static/1.png" alt="avatar" /></p>
+<h3 id="核心步骤图解">核心步骤图解</h3>
 
-<p><img src="https://alpha-mikechen.github.io/Users/mike/myBlog/static/2.png" alt="avatar" /></p>
+<p><img src="https://github.com/alpha-mikechen/alpha-mikechen.github.io/blob/master/1.png" alt="avatar" /></p>
+
+<p><img src="https://github.com/alpha-mikechen/alpha-mikechen.github.io/blob/master/2.png" alt="avatar" /></p>
 
 <hr />
 
