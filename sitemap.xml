@@ -3,24 +3,29 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://alpha-mikechen.github.io/post/3_linkedlist_interviewquestions/</loc>
-    <lastmod>2019-07-16T17:09:37+08:00</lastmod>
+    <loc>https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/</loc>
+    <lastmod>2019-07-22T11:10:15+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://alpha-mikechen.github.io/</loc>
-    <lastmod>2019-07-16T17:09:37+08:00</lastmod>
+    <lastmod>2019-07-22T11:10:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://alpha-mikechen.github.io/post/</loc>
-    <lastmod>2019-07-16T17:09:37+08:00</lastmod>
+    <lastmod>2019-07-22T11:10:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://alpha-mikechen.github.io/post/3_linkedlist/</loc>
+    <loc>https://alpha-mikechen.github.io/post/3_1_interviewquestions/</loc>
+    <lastmod>2019-07-16T17:09:37+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/</loc>
     <lastmod>2019-07-16T11:07:15+08:00</lastmod>
   </url>
   

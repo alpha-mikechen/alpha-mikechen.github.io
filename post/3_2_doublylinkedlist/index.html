@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="generator" content="Hugo 0.55.6" />
 
-  <title>Posts &middot; Mike Chen</title>
+  <title>Java数据结构与算法: 双向链表 &middot; Mike Chen</title>
 
   
   
@@ -39,9 +39,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
  
-  
-  <link rel="alternate" type="application/rss+xml" title="Mike Chen"
-    href='https://alpha-mikechen.github.io/post/index.xml' />
   
 
   
@@ -116,11 +113,6 @@
   <div class="pure-menu social">
   <ul class="pure-menu-list">
 
-    
-    <li class="pure-menu-item">
-      <a class="pure-menu-link" href='https://alpha-mikechen.github.io/post/index.xml'><i
-          class="fa fa-rss fa-fw"></i>RSS</a>
-    </li>
     
 
     
@@ -228,30 +220,221 @@
 
 
 <div class="header">
-  <h1>Posts</h1>
+  <h1>Java数据结构与算法: 双向链表</h1>
+  <h2></h2>
 </div>
 <div class="content">
-  
-  <h2>2019</h2>
-  <ul>
-  
-    <li><time>22 Jul 2019, 11:10</time> - <a href="https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/">Java数据结构与算法: 双向链表</a></li>
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>22 Jul 2019, 11:10</time>
+  </div>
 
   
-    <li><time>16 Jul 2019, 17:09</time> - <a href="https://alpha-mikechen.github.io/post/3_1_interviewquestions/">Java数据结构与算法: 5个单向链表的常见面试题</a></li>
 
   
-    <li><time>16 Jul 2019, 11:07</time> - <a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/">Java数据结构与算法: 单向链表</a></li>
 
   
-    <li><time>16 Jul 2019, 07:36</time> - <a href="https://alpha-mikechen.github.io/post/2_queue/">Java数据结构与算法: Queue</a></li>
+
+</div>
+
+  <h2 id="概念">概念</h2>
+
+<ul>
+<li>此链表中的每个节点中只包含一个数据域和两个指针域，故称为双链表</li>
+<li>任意一个节点的指针域中存储了上一个节点的地址和下一个节点的地址</li>
+</ul>
+
+<hr />
+
+<h2 id="优点">优点</h2>
+
+<ul>
+<li>查找的方向为双向</li>
+<li>可以实现自我删除而不需要借助辅助节点</li>
+</ul>
+
+<hr />
+
+<h2 id="编程实现">编程实现</h2>
+
+<h3 id="首先定义一个节点类-包含数据域和节点域">首先定义一个节点类,包含数据域和节点域</h3>
+
+<pre><code class="language-java">class Node{
+    int num; // 编号
+    String name;
+    String nickname;
+    Node pre; // 前节点
+    Node next; //后节点
+    
+    //请自行提供构造器，重写toString方法
+}
+</code></pre>
+
+<hr />
+
+<h3 id="其次定义单链表操作实现类">其次定义单链表操作实现类</h3>
+
+<h4 id="初始化头节点">初始化头节点</h4>
+
+<pre><code class="language-java">class DoublyLinkedList {
+    private Node headNode = new Node(0,&quot;&quot;,&quot;&quot;);
+
+    public Node getHeadNode() {
+        return headNode; 
+    }
+}
+</code></pre>
+
+<h4 id="addlast">addLast</h4>
+
+<pre><code class="language-java">    // 始终在链表尾部添加节点
+public void addLast(Node newNode){
+    Node temp = headNode;
+    while (temp.next != null){
+        temp = temp.next;
+    }
+    temp.next = newNode;
+    newNode.pre = temp;
+}
+</code></pre>
+
+<h4 id="addbyorder">addByOrder</h4>
+
+<pre><code class="language-java">    // 按编号添加节点
+public void addByOrder(Node newNode){
+    Node temp = headNode;
+    while(true){
+        // 如果待插入位置在尾节点
+        if (temp.next == null) {
+            temp.next = newNode;
+            newNode.pre = temp;
+            return;
+        }
+        // 如果待插入位置不在尾节点
+        if (temp.next.num &gt; newNode.num){
+            newNode.pre = temp;
+            newNode.next = temp.next;
+            temp.next.pre = newNode;
+            temp.next = newNode;
+            return;
+        }
+        temp = temp.next;
+    }
+}
+</code></pre>
+
+<h4 id="update">update</h4>
+
+<pre><code class="language-java">public void update(Node newNode){
+    if (headNode.next == null){
+        return; // 链表为空
+    }
+    Node temp = headNode.next;
+    while(true){
+        if (temp == null){
+            return; // 已到链表尾
+        }
+        if (temp.num == newNode.num){
+            temp.name = newNode.name;
+            temp.nickname = newNode.nickname;
+            return;
+        }
+        temp = temp.next;
+    }
+}
+</code></pre>
+
+<h4 id="remove">remove</h4>
+
+<pre><code class="language-java">public void remove(int num){
+    if (headNode.next == null){
+        return;
+    }
+    Node temp = headNode.next;
+    while (true){
+        if (temp == null){
+            return;// 未找到节点
+        }
+        if (temp.num == num){
+            temp.pre.next = temp.next;
+            //讨论如果已经是最后一个节点，否则会出现空指针异常
+            if (temp.next != null){
+                temp.next.pre = temp.pre;
+            }
+            return;
+        }
+        temp = temp.next;
+    }
+}
+</code></pre>
+
+<h4 id="showall">showAll</h4>
+
+<pre><code class="language-java">public void showAll(){
+    if (headNode.next == null){
+        return;
+    }
+    Node temp = headNode.next;
+    while (true){
+        if (temp == null){
+            break;
+        }
+        System.out.println(temp.toString());
+        temp = temp.next;
+    }
+}
+</code></pre>
 
   
-    <li><time>15 Jul 2019, 17:15</time> - <a href="https://alpha-mikechen.github.io/post/1_sparsearray/">Java数据结构与算法: SparseArray</a></li>
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://alpha-mikechen.github.io/post/3_1_interviewquestions/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://alpha-mikechen.github.io/post/3_1_interviewquestions/">Java数据结构与算法: 5个单向链表的常见面试题</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
 
   
-  </ul>
-  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'Your Disqus shortname';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
 </div>
 
 </div>

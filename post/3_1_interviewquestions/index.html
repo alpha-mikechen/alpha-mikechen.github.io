@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="generator" content="Hugo 0.55.6" />
 
-  <title>Java数据结构与算法: Queue &middot; Mike Chen</title>
+  <title>Java数据结构与算法: 5个单向链表的常见面试题 &middot; Mike Chen</title>
 
   
   
@@ -220,7 +220,7 @@
 
 
 <div class="header">
-  <h1>Java数据结构与算法: Queue</h1>
+  <h1>Java数据结构与算法: 5个单向链表的常见面试题</h1>
   <h2></h2>
 </div>
 <div class="content">
@@ -229,7 +229,7 @@
 
   <div>
     <i class="fa fa-calendar fa-fw"></i>
-    <time>16 Jul 2019, 07:36</time>
+    <time>16 Jul 2019, 17:09</time>
   </div>
 
   
@@ -240,100 +240,131 @@
 
 </div>
 
-  <h2 id="循环队列">循环队列</h2>
+  <h2 id="1-求单链表中有效节点的个数-即不计算头节点">1. 求单链表中有效节点的个数，即不计算头节点</h2>
 
-<h3 id="1-实现理论">1.  实现理论</h3>
+<pre><code class="language-java">public int getLength(){
+    if (headNode.next == null){
+        return 0;
+    }
+    Node temp = headNode;
+    int length = 0;
+    while (temp.next!=null){
+        length++;
+        temp = temp.next;
+    }
+    return length;
+}
+</code></pre>
+
+<hr />
+
+<h2 id="2-查找单链表中倒数第k个节点">2. 查找单链表中倒数第k个节点</h2>
+
+<pre><code class="language-java">public Node showLastIndex(int k){
+    if (headNode.next == null){
+        return null;
+    }
+    int length = getLength();
+    int index = length-k;
+    if (index&lt;0 || index &gt;length){
+        System.out.println(&quot;越界&quot;);
+        return null;
+    }
+    Node temp = headNode;
+    for (int i=1;i&lt;index;i++){
+        temp = temp.next;
+    }
+    return temp.next;
+}
+</code></pre>
+
+<hr />
+
+<h2 id="3-单链表的反转">3. 单链表的反转</h2>
+
+<h3 id="思路">思路</h3>
 
 <ul>
-<li>建立一个大小为maxSize的数组</li>
-<li>定义头指针front指向头元素</li>
-<li>定义尾指针rear指向尾元素的后一位</li>
-<li>定义当数组中仅剩一个空闲单元时，队列已满。</li>
-<li>front和rear的初始值均为0</li>
-<li>入队时，则在队尾添加元素，rear = （rear+1)%maxSize</li>
-<li>出队时，则移除队头元素，front = (front+1)%maxSize
-<br /></li>
+<li>定义一个辅助节点temp，帮助遍历原链表</li>
+<li>定义一个辅助节点tempNext，其指向temp节点的下一个，帮助摘取temp节点</li>
+<li>定义一个新的空节点reverseHead，每次遍历原链表时都顺序摘掉一个节点放在reverseHead有效节点的最前端</li>
 </ul>
 
-<blockquote>
-<p><strong>注意：</strong> 实现循环的核心是：通过指针和数组大小的求余运算(%)，使数组下标循环。</p>
-</blockquote>
-
-<h3 id="2-编程实现">2.  编程实现</h3>
-
-<pre><code class="language-java">
-class CircleArrayQueueClass{
-    private int maxSize;
-    private int front;
-    private int rear;
-    private int[] arr;
-
-    public CircleArrayQueueClass(int maxSize) {
-        this.maxSize = maxSize;
-        front = 0;
-        rear = 0;
-        arr = new int[this.maxSize];
+<pre><code class="language-java">public void reverse(){
+    //如果头节点为空，或者链表中只有一个有效节点，则无需反转
+    if (headNode.next == null || headNode.next.next == null){
+        return;
     }
-
-    //判断队列是否为空
-    public boolean isEmpty(){
-        return front == rear;
+    Node temp = headNode.next;
+    Node tempNext = null;
+    Node reverseHead = new Node(0,&quot;&quot;,&quot;&quot;);
+    while (temp!=null){
+        tempNext = temp.next;
+        temp.next = reverseHead.next;
+        reverseHead.next = temp;
+        temp = tempNext;//
     }
+    headNode.next = reverseHead.next;
+}
+</code></pre>
 
-    //判断队列是否已满
-    public boolean isFull(){
-        return (rear+1)%maxSize == front;
+<hr />
+
+<h2 id="4-不破坏原链表结构的条件下-反向打印单链表-方法-stack栈">4. 不破坏原链表结构的条件下，反向打印单链表 (方法: Stack栈)</h2>
+
+<pre><code class="language-java">public void showReverse(){
+    if (headNode.next == null || headNode.next.next == null){
+        return;
     }
-
-    //显示当前队列元素的个数
-    public int size(){
-        return (rear-front+maxSize)%maxSize;
+    //利用栈先进后出的特点
+    //将节点push进栈
+    Stack &lt;Node&gt; stack = new Stack&lt;&gt;();
+    Node temp = headNode;
+    while (temp.next != null){
+        stack.push(temp.next);
+        temp = temp.next;
     }
-
-    //入队
-    public void add(int data){
-        if (isFull()){
-            throw new RuntimeException(&quot;队列已满无法添加数据&quot;);
-        }
-        else {
-            arr[rear] = data;
-            rear = (rear+1)%maxSize;
-        }
-    }
-
-    //出队
-    public void remove(){
-        if (isEmpty()){
-            throw new RuntimeException(&quot;队列为空无法移除数据&quot;);
-        }
-        else {
-            System.out.println(&quot;移除的数据是：&quot;+arr[front]);
-            front = (front+1)%maxSize;
-        }
-    }
-
-    //显示所有元素
-    public void show(){
-        if(isEmpty()){
-            throw new RuntimeException(&quot;队列为空\n&quot;);
-        }
-        else {
-            for(int i=front;i&lt;front+size();i++){
-                System.out.printf(&quot;arr[%d] = %d\n&quot;,(i)%maxSize,arr[(i)%maxSize]);
-            }
-        }
-    }
-
-    //显示头元素
-    public void head() {
-        if (isEmpty()) {
-            throw new RuntimeException(&quot;队列为空&quot;);
-        } else {
-            System.out.println(&quot;队列头元素是：&quot;+arr[front]);
-        }
+    //栈内元素pop出栈
+    while (stack.size()&gt;0){
+        System.out.println(stack.pop().toString());
     }
 }
+</code></pre>
 
+<hr />
+
+<h2 id="5-合并两个有序单链表-合并后依然有序">5. 合并两个有序单链表，合并后依然有序</h2>
+
+<blockquote>
+<p><strong>注：</strong> combine方法中没有考虑两个链表都为空或任意一个为空的情况。比较简单没有写入</p>
+</blockquote>
+
+<pre><code class="language-java">public void combine(SinglyLinkedList secondSinglyLinkedList){
+    int length_1 = getLength();
+    int length_2 = secondSinglyLinkedList.getLength();
+    //对于每个单链表仍然需要两个辅助指针
+    //一个指向当前节点，一个指向下一个节点。方便摘取和遍历
+    Node temp_1 = headNode.next;
+    Node temp_1Next = null;
+    Node temp_2 = secondSinglyLinkedList.getHeadNode().next;
+    Node temp_2Next = null;
+    if(length_1 &gt;= length_2){
+        while (temp_2!=null){
+            temp_2Next = temp_2.next;
+            addByOrder(temp_2);
+            temp_2 = temp_2Next;
+        }
+        showAll();
+    }
+    else {
+        while (temp_1!=null){
+            temp_1Next = temp_1.next;
+            secondSinglyLinkedList.addByOrder(temp_1);
+            temp_1 = temp_1Next;
+        }
+        secondSinglyLinkedList.showAll();
+    }
+}
 </code></pre>
 
 <hr />
@@ -342,13 +373,13 @@ class CircleArrayQueueClass{
 <div class="prev-next-post pure-g">
   <div class="pure-u-1-24" style="text-align: left;">
     
-    <a href="https://alpha-mikechen.github.io/post/1_sparsearray/"><i class="fa fa-chevron-left"></i></a>
+    <a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/"><i class="fa fa-chevron-left"></i></a>
     
   </div>
   <div class="pure-u-10-24">
     
     <nav class="prev">
-      <a href="https://alpha-mikechen.github.io/post/1_sparsearray/">Java数据结构与算法: SparseArray</a>
+      <a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/">Java数据结构与算法: 单向链表</a>
     </nav>
     
   </div>
@@ -358,13 +389,13 @@ class CircleArrayQueueClass{
   <div class="pure-u-10-24">
     
     <nav class="next">
-      <a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/">Java数据结构与算法: 单向链表</a>
+      <a href="https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/">Java数据结构与算法: 双向链表</a>
     </nav>
     
   </div>
   <div class="pure-u-1-24" style="text-align: right;">
     
-    <a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/"><i class="fa fa-chevron-right"></i></a>
+    <a href="https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/"><i class="fa fa-chevron-right"></i></a>
     
   </div>
 </div>

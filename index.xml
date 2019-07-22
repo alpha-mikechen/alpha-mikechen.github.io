@@ -6,26 +6,35 @@
     <description>Recent content on Mike Chen</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>&amp;copy; 2018. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 16 Jul 2019 17:09:37 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 22 Jul 2019 11:10:15 +0800</lastBuildDate>
     
 	<atom:link href="https://alpha-mikechen.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Java数据结构与算法: 5个单向链表的常见面试题</title>
-      <link>https://alpha-mikechen.github.io/post/3_linkedlist_interviewquestions/</link>
-      <pubDate>Tue, 16 Jul 2019 17:09:37 +0800</pubDate>
+      <title>Java数据结构与算法: 双向链表</title>
+      <link>https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/</link>
+      <pubDate>Mon, 22 Jul 2019 11:10:15 +0800</pubDate>
       
-      <guid>https://alpha-mikechen.github.io/post/3_linkedlist_interviewquestions/</guid>
+      <guid>https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Java数据结构与算法: LinkedList</title>
-      <link>https://alpha-mikechen.github.io/post/3_linkedlist/</link>
+      <title>Java数据结构与算法: 5个单向链表的常见面试题</title>
+      <link>https://alpha-mikechen.github.io/post/3_1_interviewquestions/</link>
+      <pubDate>Tue, 16 Jul 2019 17:09:37 +0800</pubDate>
+      
+      <guid>https://alpha-mikechen.github.io/post/3_1_interviewquestions/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Java数据结构与算法: 单向链表</title>
+      <link>https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/</link>
       <pubDate>Tue, 16 Jul 2019 11:07:15 +0800</pubDate>
       
-      <guid>https://alpha-mikechen.github.io/post/3_linkedlist/</guid>
+      <guid>https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/</guid>
       <description></description>
     </item>
     
