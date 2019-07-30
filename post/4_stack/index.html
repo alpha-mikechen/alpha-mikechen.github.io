@@ -296,7 +296,7 @@
     StackNode top = null;
 
     public void push(StackNode newNode){
-        // 将第一个新节点作为新头节点
+        // 将第一个新节点作为头节点
         if (head == null){
             head = newNode;
             top = head;
@@ -351,23 +351,18 @@
 
 <h4 id="首先添加额外的方法">首先添加额外的方法</h4>
 
-<h5 id="查看栈顶元素">查看栈顶元素</h5>
-
-<pre><code class="language-java">public int peak(){
+<pre><code class="language-java">// 查看栈顶元素
+public int peak(){
     return stack[top];
 }
-</code></pre>
 
-<h5 id="判断是否是运算符">判断是否是运算符</h5>
-
-<pre><code class="language-java">public boolean isOper(int ch){
+// 判断是否是运算符
+public boolean isOper(int ch){
     return ch == '+' || val == '-' || val == '*' || val == '/';
 }
-</code></pre>
 
-<h5 id="判断运算符优先级-自己定义">判断运算符优先级（自己定义）</h5>
-
-<pre><code class="language-java">public int priority(int oper){
+// 判断运算符优先级（自己定义）
+public int priority(int oper){
     if (oper == '*' || oper == '/'){
         return 1;
     }
@@ -377,11 +372,9 @@
         return -1;
     }
 }
-</code></pre>
 
-<h5 id="计算">计算</h5>
-
-<pre><code class="language-java">public int calculate(int num1, int num2, int oper){
+// 计算
+public int calculate(int num1, int num2, int oper){
     int result = 0;
     switch (oper){
         case '+': {
