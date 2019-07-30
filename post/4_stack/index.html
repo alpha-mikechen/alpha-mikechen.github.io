@@ -402,7 +402,7 @@ public int calculate(int num1, int num2, int oper){
 
 <pre><code class="language-java">public class CalculatorTest {
     public static void main(String[] args) {
-        String expression = &quot;3+5*8/2-2&quot;;// 表达式
+        String expression = &quot;3+5*8/2-20&quot;;// 表达式
         Stack numStack = new Stack(expression.length());// 数栈
         Stack operStack = new Stack(expression.length());// 符号栈
         int num1;
@@ -411,10 +411,10 @@ public int calculate(int num1, int num2, int oper){
         int res; // 运算结果
         int index = 0;// 索引
         char ch;// 字符串的各个元素
+        String fullNum = &quot;&quot;;// 用于多位数，数字字符拼接
         while (true){
             //依次得到字符串的每一个元素
-            ch = expression.substring(index,++index).charAt(0);
-
+            ch = expression.substring(index,index+1).charAt(0);
             //若元素为运算符
             if (operStack.isOper(ch)){
                 //若符号栈为空，直接入栈
@@ -436,11 +436,22 @@ public int calculate(int num1, int num2, int oper){
                     operStack.push(ch);
                 }
             }
-            //若元素为数字
+            //若元素为数字，注意可能是多位数
             else {
-                //直接入数栈，注意字符转数字
-                numStack.push(ch-48);
+                // 数字字符拼接
+                fullNum += ch;
+                // 如果索引位置已经是最后一位，则不需要再向后看
+                if (index == expression.length()-1){
+                    numStack.push(Integer.parseInt(fullNum));
+                }
+                // 如果索引位置的后一位是运算符，则fullNum直接入栈。（注意只是向后看一位，index不需要自增）
+                else if (operStack.isOper(expression.substring(index+1,index+2).charAt(0))){
+                    numStack.push(Integer.parseInt(fullNum));
+                    // 重要！！！入栈后清空fullNum
+                    fullNum = &quot;&quot;;
+                }
             }
+            index++;
             // 判断index是否索引到字符串末尾
             if (index &gt;= expression.length()){
                 break;
@@ -456,7 +467,7 @@ public int calculate(int num1, int num2, int oper){
             res = numStack.calculate(num1,num2,oper);
             numStack.push(res);
         }
-        System.out.println(&quot;表达式的结果是: &quot;+numStack.peak());
+        System.out.println(&quot;表达式 &quot;+expression+&quot; 的结果是: &quot;+numStack.peak());
     }
 }
 </code></pre>
