@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="generator" content="Hugo 0.55.6" />
 
-  <title>Mike Chen</title>
+  <title>Java数据结构与算法: 递归的2个应用 &middot; Mike Chen</title>
 
   
   
@@ -39,9 +39,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
  
-  
-  <link rel="alternate" type="application/rss+xml" title="Mike Chen"
-    href='https://alpha-mikechen.github.io/index.xml' />
   
 
   
@@ -116,11 +113,6 @@
   <div class="pure-menu social">
   <ul class="pure-menu-list">
 
-    
-    <li class="pure-menu-item">
-      <a class="pure-menu-link" href='https://alpha-mikechen.github.io/index.xml'><i
-          class="fa fa-rss fa-fw"></i>RSS</a>
-    </li>
     
 
     
@@ -228,17 +220,12 @@
 
 
 <div class="header">
-  <h1>Mike Chen</h1>
-  <h2>Based on Hugo</h2>
+  <h1>Java数据结构与算法: 递归的2个应用</h1>
+  <h2></h2>
 </div>
-
 <div class="content">
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/5_recursion/">Java数据结构与算法: 递归的2个应用</a></h2>
 
-    <div class="post-meta">
+  <div class="post-meta">
 
   <div>
     <i class="fa fa-calendar fa-fw"></i>
@@ -253,286 +240,180 @@
 
 </div>
 
-  </header>
+  <h2 id="1-迷宫问题">1.  迷宫问题</h2>
 
-  <p>
+<h3 id="实现理论">实现理论</h3>
+
+<ul>
+<li>用二维数组模拟地图</li>
+<li>1表示墙，0表示该点没走过，2表示通路，3表示已走过但是走不通</li>
+<li>需自定义移动规则，下右上左</li>
+<li>用递归来实现回溯</li>
+</ul>
+
+<blockquote>
+<p><strong>注意：</strong> 在没有学习高级数据结构与算法的前提下，求最短路径需改变移动规则</p>
+</blockquote>
+
+<h3 id="程序实现">程序实现</h3>
+
+<pre><code class="language-java">class Map{
+    private int [][] map;// 二维数组模拟地图
+    private int rowNum; // 地图行
+    private int columnNum;// 地图列
+    private int exitRow;// 出口位置行
+    private int exitColumn;// 出口位置列
+
+    public Map(int rowNum, int columnNum) {
+        this.rowNum = rowNum;
+        this.columnNum = columnNum;
+        map(); // 调用本类中初始化迷宫方法
+    }
+    
+    /**
+     * 开始按规则移动
+     */
+    public boolean play(int startRow, int startColumn){
+        if (map[exitRow][exitColumn] == 2){ // 到达出口(标记为2)，结束游戏
+            return true;
+            }
+        else {
+            if (map[startRow][startColumn] == 0){// 如果该点没有走过
+                map[startRow][startColumn] == 2; // 先假设为通路
+                if (play(startRow+1, startColumn)){ // 向下走
+                    return true;
+                }
+                else if(play(startRow,startColumn+1)){ // 向右走
+                    return true;
+                }
+                else if(play(startRow-1,startColumn)){ // 向上走
+                    return true;
+                }
+                else if(play(startRow,startColumn-1)){// 向左走
+                    return true;
+                }
+                else {// 该位置是死路
+                    map[startRow][startColumn] = 3;
+                    return false;
+                }
+            }
+            else { // 如果该点的标记不为0，即可能为1，2，3
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 初始化迷宫
+     */
+    private void map(){
+        map = new int[rowNum][columnNum];
+        //将迷宫的边界全部置1，表示墙
+        for(int i=0;i&lt;columnNum;i++){
+            map[0][i] = 1;
+            map[rowNum-1][i] = 1;
+        }
+        for(int j=0;j&lt;rowNum;j++){
+            map[j][0] = 1;
+            map[j][columnNum-1] = 1;
+        }
+        // 添加额外的墙
+        map[3][1] = 1;
+        map[3][2] = 1;
+        map[1][2] = 1; // 测试更直观的回溯
+        map[2][2] = 1; // 测试更直观的回溯
+
+        // 设定迷宫出口
+        exitRow = rowNum-2;
+        exitColumn = columnNum -2;
+    }
+}
+</code></pre>
+
+<h3 id="运行结果与分析">运行结果与分析</h3>
+
+<p>当测试地图大小为6x6，起点位置为 map[1][1],出口位置为 map[4][4]</p>
+
+<p>主要运行步骤:</p>
+
+<ol>
+<li>map[1][1]为0, 先被置为2，向下走</li>
+<li>map[2][1]为0， 先被置为2，向下走</li>
+<li>map[3][1]不为0，return false，回溯到map[2][1]向右走</li>
+<li>map[2][3]不为0，return false，回溯到map[2][1]向上走</li>
+<li>map[1][1]不为0，return false，回溯到map[2][1]向左走</li>
+<li>map[2][0]不为0, return false，回溯到map[2][1]</li>
+
+<li><p>移动规则全为false，该点为死路，map[2][1]被置为3，回溯到map[1][1]，重复回溯过程。</p>
+
+<pre><code>1	1	1	1	1	1	
+1	3	1	0	0	1	
+1	3	1	0	0	1	
+1	1	1	0	0	1	
+1	0	0	0	0	1	
+1	1	1	1	1	1
+</code></pre></li>
+</ol>
+
+<p>当撤销用于测试直观回溯的两个墙时 (map[1][2] , map[2][2]):</p>
+
+<pre><code>1	1	1	1	1	1	
+1	2	0	0	0	1	
+1	2	2	2	0	1	
+1	1	1	2	0	1	
+1	0	0	2	2	1	
+1	1	1	1	1	1
+</code></pre>
+
+<hr />
+
+<h2 id="2-八皇后问题">2.  八皇后问题</h2>
+
   
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/5_recursion/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/">Java数据结构与算法: 栈与后缀表达式</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>30 Jul 2019, 10:09</time>
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/"><i class="fa fa-chevron-left"></i></a>
+    
   </div>
-
-  
-
-  
-
-  
-
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/">Java数据结构与算法: 栈与后缀表达式</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
 </div>
 
-  </header>
 
-  <p>
-  
-  </p>
 
   
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/4_1_stack/">Java数据结构与算法: 栈与中缀表达式</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>30 Jul 2019, 07:29</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/4_1_stack/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_3_singlycircularlinkedlist/">Java数据结构与算法: 单向循环链表及约瑟夫问题</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>22 Jul 2019, 11:10</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_3_singlycircularlinkedlist/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/">Java数据结构与算法: 双向链表</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>22 Jul 2019, 11:10</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_1_interviewquestions/">Java数据结构与算法: 5个单向链表的常见面试题</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>16 Jul 2019, 17:09</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_1_interviewquestions/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/">Java数据结构与算法: 单向链表</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>16 Jul 2019, 11:07</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/2_queue/">Java数据结构与算法: Queue</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>16 Jul 2019, 07:36</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/2_queue/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/1_sparsearray/">Java数据结构与算法: SparseArray</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>15 Jul 2019, 17:15</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/1_sparsearray/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-
-  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'Your Disqus shortname';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 </div>
