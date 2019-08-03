@@ -271,6 +271,31 @@
     }
     
     /**
+     * 初始化迷宫
+     */
+    private void map(){
+        map = new int[rowNum][columnNum];
+        //将迷宫的边界全部置1，表示墙
+        for(int i=0;i&lt;columnNum;i++){
+            map[0][i] = 1;
+            map[rowNum-1][i] = 1;
+        }
+        for(int j=0;j&lt;rowNum;j++){
+            map[j][0] = 1;
+            map[j][columnNum-1] = 1;
+        }
+        // 添加额外的墙
+        map[3][1] = 1;
+        map[3][2] = 1;
+        map[1][2] = 1; // 测试更直观的回溯
+        map[2][2] = 1; // 测试更直观的回溯
+
+        // 设定迷宫出口
+        exitRow = rowNum-2;
+        exitColumn = columnNum -2;
+    }
+
+    /**
      * 开始按规则移动
      */
     public boolean play(int startRow, int startColumn){
@@ -303,29 +328,13 @@
         }
     }
 
-    /**
-     * 初始化迷宫
-     */
-    private void map(){
-        map = new int[rowNum][columnNum];
-        //将迷宫的边界全部置1，表示墙
-        for(int i=0;i&lt;columnNum;i++){
-            map[0][i] = 1;
-            map[rowNum-1][i] = 1;
+    public void showMap(){
+        for(int i=0;i&lt;rowNum;i++){
+            for(int j=0;j&lt;columnNum;j++){
+                System.out.print(map[i][j]+&quot;\t&quot;);
+            }
+            System.out.println();
         }
-        for(int j=0;j&lt;rowNum;j++){
-            map[j][0] = 1;
-            map[j][columnNum-1] = 1;
-        }
-        // 添加额外的墙
-        map[3][1] = 1;
-        map[3][2] = 1;
-        map[1][2] = 1; // 测试更直观的回溯
-        map[2][2] = 1; // 测试更直观的回溯
-
-        // 设定迷宫出口
-        exitRow = rowNum-2;
-        exitColumn = columnNum -2;
     }
 }
 </code></pre>
@@ -343,8 +352,10 @@
 <li>map[2][3]不为0，return false，回溯到map[2][1]向上走</li>
 <li>map[1][1]不为0，return false，回溯到map[2][1]向左走</li>
 <li>map[2][0]不为0, return false，回溯到map[2][1]</li>
+<li>移动规则全为false，该点为死路，map[2][1]被置为3，回溯到map[1][1]，重复回溯过程。</li>
+</ol>
 
-<li><p>移动规则全为false，该点为死路，map[2][1]被置为3，回溯到map[1][1]，重复回溯过程。</p>
+<p>运行结果:</p>
 
 <pre><code>1	1	1	1	1	1	
 1	3	1	0	0	1	
@@ -352,10 +363,9 @@
 1	1	1	0	0	1	
 1	0	0	0	0	1	
 1	1	1	1	1	1
-</code></pre></li>
-</ol>
+</code></pre>
 
-<p>当撤销用于测试直观回溯的两个墙时 (map[1][2] , map[2][2]):</p>
+<p>当撤销用于测试直观回溯的两个墙 (map[1][2] , map[2][2])，运行结果:</p>
 
 <pre><code>1	1	1	1	1	1	
 1	2	0	0	0	1	
