@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="generator" content="Hugo 0.55.6" />
 
-  <title>Mike Chen</title>
+  <title>XML解析——SAX方式 &middot; Mike Chen</title>
 
   
   
@@ -39,9 +39,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
  
-  
-  <link rel="alternate" type="application/rss+xml" title="Mike Chen"
-    href='https://alpha-mikechen.github.io/index.xml' />
   
 
   
@@ -116,11 +113,6 @@
   <div class="pure-menu social">
   <ul class="pure-menu-list">
 
-    
-    <li class="pure-menu-item">
-      <a class="pure-menu-link" href='https://alpha-mikechen.github.io/index.xml'><i
-          class="fa fa-rss fa-fw"></i>RSS</a>
-    </li>
     
 
     
@@ -228,50 +220,12 @@
 
 
 <div class="header">
-  <h1>Mike Chen</h1>
-  <h2>Based on Hugo</h2>
+  <h1>XML解析——SAX方式</h1>
+  <h2></h2>
 </div>
-
 <div class="content">
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/webxml/">WebXML解析</a></h2>
 
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>08 Aug 2019, 10:25</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/webxml/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/xmltest/">XML解析——SAX方式</a></h2>
-
-    <div class="post-meta">
+  <div class="post-meta">
 
   <div>
     <i class="fa fa-calendar fa-fw"></i>
@@ -286,298 +240,188 @@
 
 </div>
 
-  </header>
+  <h2 id="xml样例">XML样例</h2>
 
-  <p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;persons&gt;
+    &lt;person&gt;
+        &lt;name&gt;至尊宝&lt;/name&gt;
+        &lt;age&gt;9000&lt;/age&gt;
+    &lt;/person&gt;
+    &lt;person&gt;
+        &lt;name&gt;白晶晶&lt;/name&gt;
+        &lt;age&gt;7000&lt;/age&gt;
+    &lt;/person&gt;
+&lt;/persons&gt;
+</code></pre>
+
+<h2 id="sax解析方式">SAX解析方式</h2>
+
+<blockquote>
+<p><strong>注意：</strong> 将读到的标签qName保存在临时变量中，用来帮助存储数据contents。还需在适当的时候清空此临时变量。
+进行存入List的操作判断依据在于判断qName！！！不是tag！！！</p>
+</blockquote>
+
+<pre><code class="language-java">public class XMLTest {
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+        //1、获取解析工厂
+        SAXParserFactory factory=SAXParserFactory.newInstance();
+        
+        //2、从解析工厂获取解析器
+        SAXParser parse =factory.newSAXParser();
+        
+        //3、编写处理器
+        //4、加载文档 Document 注册处理器
+        PersonHandler handler=new PersonHandler();
+        
+        //5、解析
+        parse.parse(XMLPATH,handler);// XMLPATH为XML文件路径
+
+        //6、获取数据
+        List&lt;Person&gt; list = handler.getList();
+        for(Person ele:list){
+            System.out.println(ele.getName()+&quot; &quot;+ele.getAge());
+        }
+    }
+}
+
+class PersonHandler extends DefaultHandler {
+    private List&lt;Person&gt; list;// 容器
+    private Person person;
+    private String tag;// 存储标签
+
+    public List&lt;Person&gt; getList() {
+        return list;
+    }
+
+    @Override
+    public void startDocument() throws SAXException {
+        // 当开始解析文档时，初始化容器
+        list = new ArrayList&lt;&gt;();
+    }
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        // 当解析到person标签的时候，对person初始化
+        if (qName!=null){
+            tag = qName;
+            if (tag.equals(&quot;person&quot;)){
+                person = new Person();
+            }
+        }
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        String contents = new String(ch,start,length).trim();
+        // 根据读到的标签，按需存储到Person对象中
+        if (tag!=null) {
+            if (tag.equals(&quot;name&quot;)) {
+                person.setName(contents);
+            } else if (tag.equals(&quot;age&quot;)) {
+                person.setAge(Integer.valueOf(contents));
+            }
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        // 当解析到person标签时，将person加入到容器中
+        // 请注意此时的判断依据为qName不是tag！！！
+        if (qName!=null) {
+            if (qName.equals(&quot;person&quot;)) {
+                list.add(person);
+            }
+        }
+        tag = null;// 将tag丢弃，避免读到空格将contents覆盖
+    }
+
+    @Override
+    public void endDocument() throws SAXException {
+    }
+}
+
+class Person {
+    private String name;
+    private int age;
+
+    public Person() {
+    }
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+</code></pre>
+
   
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/xmltest/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/reflection/">反射</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>08 Aug 2019, 09:32</time>
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://alpha-mikechen.github.io/post/reflection/"><i class="fa fa-chevron-left"></i></a>
+    
   </div>
-
-  
-
-  
-
-  
-
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://alpha-mikechen.github.io/post/reflection/">反射</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="next">
+      <a href="https://alpha-mikechen.github.io/post/webxml/">WebXML解析</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+    <a href="https://alpha-mikechen.github.io/post/webxml/"><i class="fa fa-chevron-right"></i></a>
+    
+  </div>
 </div>
 
-  </header>
 
-  <p>
-  
-  </p>
 
   
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/reflection/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/5_recursion/">Java数据结构与算法: 递归的2个应用</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>31 Jul 2019, 13:33</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/5_recursion/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/">Java数据结构与算法: 栈与后缀表达式</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>30 Jul 2019, 10:09</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/4_1_stack/">Java数据结构与算法: 栈与中缀表达式</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>30 Jul 2019, 07:29</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/4_1_stack/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_3_singlycircularlinkedlist/">Java数据结构与算法: 单向循环链表及约瑟夫问题</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>22 Jul 2019, 11:10</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_3_singlycircularlinkedlist/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/">Java数据结构与算法: 双向链表</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>22 Jul 2019, 11:10</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_2_doublylinkedlist/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_1_interviewquestions/">Java数据结构与算法: 5个单向链表的常见面试题</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>16 Jul 2019, 17:09</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_1_interviewquestions/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-    <article>
-  <header>
-    <h2><a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/">Java数据结构与算法: 单向链表</a></h2>
-
-    <div class="post-meta">
-
-  <div>
-    <i class="fa fa-calendar fa-fw"></i>
-    <time>16 Jul 2019, 11:07</time>
-  </div>
-
-  
-
-  
-
-  
-
-</div>
-
-  </header>
-
-  <p>
-  
-  </p>
-
-  
-  <footer>
-    <a href="https://alpha-mikechen.github.io/post/3_1_singlylinkedlist/">Read more<i class="fa fa-angle-double-right fa-fw"></i></a>
-  </footer>
-  
-</article>
-
-  
-
-  
-
-
-<nav class="pagination" role="pagination">
-  
-  <i class="fa fa-chevron-left"></i>
-  
-  <span>&nbsp;1 / 2&nbsp;</span>
-  
-  <a href="https://alpha-mikechen.github.io/page/2/"><i class="fa fa-chevron-right"></i></a>
-  
-</nav>
-
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'Your Disqus shortname';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 </div>

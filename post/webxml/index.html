@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="generator" content="Hugo 0.55.6" />
 
-  <title>Java数据结构与算法: 递归的2个应用 &middot; Mike Chen</title>
+  <title>WebXML解析 &middot; Mike Chen</title>
 
   
   
@@ -220,7 +220,7 @@
 
 
 <div class="header">
-  <h1>Java数据结构与算法: 递归的2个应用</h1>
+  <h1>WebXML解析</h1>
   <h2></h2>
 </div>
 <div class="content">
@@ -229,7 +229,7 @@
 
   <div>
     <i class="fa fa-calendar fa-fw"></i>
-    <time>31 Jul 2019, 13:33</time>
+    <time>08 Aug 2019, 10:25</time>
   </div>
 
   
@@ -240,156 +240,220 @@
 
 </div>
 
-  <h2 id="1-迷宫问题">1.  迷宫问题</h2>
+  <h2 id="webxml样例">WebXML样例</h2>
 
-<h3 id="实现理论">实现理论</h3>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;  
+ &lt;web-app&gt;
+ &lt;servlet&gt;
+  &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;com.my.server.WebXMLTest.loginServlet&lt;/servlet-class&gt;
+ &lt;/servlet&gt;
+ &lt;servlet&gt;
+  &lt;servlet-name&gt;reg&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;com.my.server.WebXMLTest.registerServlet&lt;/servlet-class&gt;
+ &lt;/servlet&gt;
+ &lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/login&lt;/url-pattern&gt; 
+  &lt;url-pattern&gt;/g&lt;/url-pattern&gt; 
+ &lt;/servlet-mapping&gt;
+ &lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;reg&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/reg&lt;/url-pattern&gt; 
+ &lt;/servlet-mapping&gt;
+ &lt;/web-app&gt;
+</code></pre>
 
-<ul>
-<li>用二维数组模拟地图</li>
-<li>1表示墙，0表示该点没走过，2表示通路，3表示已走过但是走不通</li>
-<li>需自定义移动规则，下右上左</li>
-<li>用递归来实现回溯</li>
-</ul>
+<h2 id="程序实现要求">程序实现要求</h2>
 
-<blockquote>
-<p><strong>注意：</strong> 在没有学习高级数据结构与算法的前提下，求最短路径需改变移动规则</p>
-</blockquote>
+<p>当输入/g 或 /login 可以跳转com.my.server.WebXMLTest.loginServlet</p>
 
-<h3 id="程序实现">程序实现</h3>
+<p>当输入/reg 可以跳转com.my.server.WebXMLTest.registerServlet</p>
 
-<pre><code class="language-java">class Map{
-    private int [][] map;// 二维数组模拟地图
-    private int rowNum; // 地图行
-    private int columnNum;// 地图列
-    private int exitRow;// 出口位置行
-    private int exitColumn;// 出口位置列
+<h2 id="编程实现解析">编程实现解析</h2>
 
-    public Map(int rowNum, int columnNum) {
-        this.rowNum = rowNum;
-        this.columnNum = columnNum;
-        map(); // 调用本类中初始化迷宫方法
-    }
+<h3 id="1-创建两个类-请自行补全构造器-get和set方法">1.  创建两个类 (请自行补全构造器, get和set方法)</h3>
+
+<pre><code class="language-java">/**
+ * &lt;servlet&gt;
+ *   &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+ *   &lt;servlet-class&gt;com.sxt.server.basic.servlet.LoginServlet&lt;/servlet-class&gt;
+ * &lt;/servlet&gt;
+ */
+class Entity {
+    private String name;
+    private String clz;
+}
+
+/**
+ * &lt;servlet-mapping&gt;
+ *   &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+ *   &lt;url-pattern&gt;/login&lt;/url-pattern&gt;
+ *   &lt;url-pattern&gt;/g&lt;/url-pattern&gt;
+ * &lt;/servlet-mapping&gt;
+ */
+class Mapping {
+    private String name;
+    private Set&lt;String&gt; patterns;// 由于要存放的url多个不可重复，采用Set
     
-    /**
-     * 初始化迷宫
-     */
-    private void map(){
-        map = new int[rowNum][columnNum];
-        //将迷宫的边界全部置1，表示墙
-        for(int i=0;i&lt;columnNum;i++){
-            map[0][i] = 1;
-            map[rowNum-1][i] = 1;
+    public void addPattern(String pattern){
+            this.patterns.add(pattern);
         }
-        for(int j=0;j&lt;rowNum;j++){
-            map[j][0] = 1;
-            map[j][columnNum-1] = 1;
-        }
-        // 添加额外的墙
-        map[3][1] = 1;
-        map[3][2] = 1;
-        map[1][2] = 1; // 测试更直观的回溯
-        map[2][2] = 1; // 测试更直观的回溯
+}
+</code></pre>
 
-        // 设定迷宫出口
-        exitRow = rowNum-2;
-        exitColumn = columnNum -2;
+<h3 id="2-xml解析">2.  XML解析</h3>
+
+<pre><code class="language-java">public class XMLTest {
+    public static void main(String[] args) throws Exception {
+        //SAX解析
+        //1、获取解析工厂
+        SAXParserFactory factory=SAXParserFactory.newInstance();
+        //2、从解析工厂获取解析器
+        SAXParser parse =factory.newSAXParser();
+        //3、编写处理器
+        //4、加载文档 Document 注册处理器
+        WebHandler handler=new WebHandler();
+        //5、解析
+        parse.parse(&quot;XMLPath&quot;,handler);// PATH请填XML文件路径
+        //6、获取数据
+        WebContent content = new WebContent(handler.getEntities(),handler.getMappings());
+
+        //假设输入/g或者/login
+        String name = content.getClz(&quot;/g&quot;);
+        Class cl = Class.forName(name);
+        Servlet ser = (Servlet)cl.getConstructor().newInstance();
+        System.out.println(ser);
+        ser.service();
+    }
+}
+
+class WebHandler extends DefaultHandler {
+    private List&lt;Entity&gt; entities = new ArrayList&lt;&gt;();
+    private List&lt;Mapping&gt; mappings = new ArrayList&lt;&gt;();
+    private Entity entity;
+    private Mapping mapping;
+    private String tag;
+    private boolean isMapping;
+
+    public List&lt;Entity&gt; getEntities() {
+        return entities;
     }
 
-    /**
-     * 开始按规则移动
-     */
-    public boolean play(int startRow, int startColumn){
-        if (map[exitRow][exitColumn] == 2){ // 到达出口(标记为2)，结束游戏
-            return true;
+    public List&lt;Mapping&gt; getMappings() {
+        return mappings;
+    }
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        if (qName!=null){
+            tag = qName;// 存储
+            if (tag.equals(&quot;servlet&quot;)){
+                entity = new Entity();
+                isMapping = false;
             }
-        else {
-            if (map[startRow][startColumn] == 0){// 如果该点没有走过
-                map[startRow][startColumn] == 2; // 先假设为通路
-                if (play(startRow+1, startColumn)){ // 向下走
-                    return true;
-                }
-                else if(play(startRow,startColumn+1)){ // 向右走
-                    return true;
-                }
-                else if(play(startRow-1,startColumn)){ // 向上走
-                    return true;
-                }
-                else if(play(startRow,startColumn-1)){// 向左走
-                    return true;
-                }
-                else {// 该位置是死路
-                    map[startRow][startColumn] = 3;
-                    return false;
-                }
-            }
-            else { // 如果该点的标记不为0，即可能为1，2，3
-                return false;
+            else if (tag.equals(&quot;servlet-mapping&quot;)){
+                mapping = new Mapping();
+                isMapping = true;
             }
         }
     }
 
-    public void showMap(){
-        for(int i=0;i&lt;rowNum;i++){
-            for(int j=0;j&lt;columnNum;j++){
-                System.out.print(map[i][j]+&quot;\t&quot;);
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        String contents = new String(ch,start,length).trim();
+        if (tag!=null) {
+            if (isMapping){
+                if (tag.equals(&quot;servlet-name&quot;)) {
+                    mapping.setName(contents);
+                } else if (tag.equals(&quot;url-pattern&quot;)) {
+                    mapping.addPattern(contents);
+                }
             }
-            System.out.println();
+            else {
+                if (tag.equals(&quot;servlet-name&quot;)) {
+                    entity.setName(contents);
+                } else if (tag.equals(&quot;servlet-class&quot;)) {
+                    entity.setClz(contents);
+                }
+            }
         }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        if (qName!=null) {
+            if (qName.equals(&quot;servlet&quot;)) {
+                entities.add(entity);
+            }
+            else if (qName.equals(&quot;servlet-mapping&quot;)){
+                mappings.add(mapping);
+            }
+        }
+        tag = null;// 将tag丢弃，避免读到空格将contents覆盖
+    }
+}
+
+class WebContent {
+    private List&lt;Entity&gt; listE;
+    private List&lt;Mapping&gt; listM;
+
+    private Map&lt;String,String&gt; entityMap;// key: servlet-name; value: servlet-class
+    private Map&lt;String,String&gt; mappingMap;// key: url-pattern; value: servlet-name
+
+    public WebContent(List&lt;Entity&gt; listE, List&lt;Mapping&gt; listM) {
+        this.listE = listE;
+        this.listM = listM;
+        entityMap = new HashMap&lt;&gt;();
+        mappingMap = new HashMap&lt;&gt;();
+
+        for (Entity ele:this.listE){
+            entityMap.put(ele.getName(),ele.getClz());
+        }
+        for (Mapping ele:this.listM){
+            for (String pattern:ele.getPatterns())
+                mappingMap.put(pattern,ele.getName());
+        }
+    }
+
+    public String getClz(String pattern){
+        return entityMap.get(mappingMap.get(pattern));
     }
 }
 </code></pre>
 
-<h3 id="运行结果与分析">运行结果与分析</h3>
+<h3 id="3-接口和实现">3.  接口和实现</h3>
 
-<p>当测试地图大小为6x6，起点位置为 map[1][1],出口位置为 map[4][4]</p>
+<pre><code class="language-java">public interface Servlet {
+    void service();
+}
 
-<p>主要运行步骤:</p>
+class loginServlet implements Servlet {
+    @Override
+    public void service() {
+        System.out.println(&quot;loginServlet&quot;);
+    }
+}
 
-<ol>
-<li>map[1][1]为0, 先被置为2，向下走</li>
-<li>map[2][1]为0， 先被置为2，向下走</li>
-<li>map[3][1]不为0，return false，回溯到map[2][1]向右走</li>
-<li>map[2][3]不为0，return false，回溯到map[2][1]向上走</li>
-<li>map[1][1]不为0，return false，回溯到map[2][1]向左走</li>
-<li>map[2][0]不为0, return false，回溯到map[2][1]</li>
-<li>移动规则全为false，该点为死路，map[2][1]被置为3，回溯到map[1][1]，重复回溯过程。</li>
-</ol>
-
-<p>运行结果:</p>
-
-<pre><code>1	1	1	1	1	1	
-1	3	1	0	0	1	
-1	3	1	0	0	1	
-1	1	1	0	0	1	
-1	0	0	0	0	1	
-1	1	1	1	1	1
+class registerServlet implements Servlet{
+    @Override
+    public void service() {
+        System.out.println(&quot;registerServlet&quot;);
+    }
+}
 </code></pre>
-
-<p>当撤销用于测试直观回溯的两个墙 (map[1][2] , map[2][2])，运行结果:</p>
-
-<pre><code>1	1	1	1	1	1	
-1	2	0	0	0	1	
-1	2	2	2	0	1	
-1	1	1	2	0	1	
-1	0	0	2	2	1	
-1	1	1	1	1	1
-</code></pre>
-
-<hr />
-
-<h2 id="2-八皇后问题">2.  八皇后问题</h2>
 
   
 <div class="prev-next-post pure-g">
   <div class="pure-u-1-24" style="text-align: left;">
     
-    <a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/"><i class="fa fa-chevron-left"></i></a>
+    <a href="https://alpha-mikechen.github.io/post/xmltest/"><i class="fa fa-chevron-left"></i></a>
     
   </div>
   <div class="pure-u-10-24">
     
     <nav class="prev">
-      <a href="https://alpha-mikechen.github.io/post/4_2_stackapplication2/">Java数据结构与算法: 栈与后缀表达式</a>
+      <a href="https://alpha-mikechen.github.io/post/xmltest/">XML解析——SAX方式</a>
     </nav>
     
   </div>
@@ -398,14 +462,8 @@
   </div>
   <div class="pure-u-10-24">
     
-    <nav class="next">
-      <a href="https://alpha-mikechen.github.io/post/reflection/">反射</a>
-    </nav>
-    
   </div>
   <div class="pure-u-1-24" style="text-align: right;">
-    
-    <a href="https://alpha-mikechen.github.io/post/reflection/"><i class="fa fa-chevron-right"></i></a>
     
   </div>
 </div>

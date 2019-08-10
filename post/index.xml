@@ -6,10 +6,37 @@
     <description>Recent content in Posts on Mike Chen</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>&amp;copy; 2018. All rights reserved.</copyright>
-    <lastBuildDate>Wed, 31 Jul 2019 13:33:30 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 08 Aug 2019 10:25:15 +0800</lastBuildDate>
     
 	<atom:link href="https://alpha-mikechen.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>WebXML解析</title>
+      <link>https://alpha-mikechen.github.io/post/webxml/</link>
+      <pubDate>Thu, 08 Aug 2019 10:25:15 +0800</pubDate>
+      
+      <guid>https://alpha-mikechen.github.io/post/webxml/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>XML解析——SAX方式</title>
+      <link>https://alpha-mikechen.github.io/post/xmltest/</link>
+      <pubDate>Thu, 08 Aug 2019 10:22:46 +0800</pubDate>
+      
+      <guid>https://alpha-mikechen.github.io/post/xmltest/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>反射</title>
+      <link>https://alpha-mikechen.github.io/post/reflection/</link>
+      <pubDate>Thu, 08 Aug 2019 09:32:12 +0800</pubDate>
+      
+      <guid>https://alpha-mikechen.github.io/post/reflection/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Java数据结构与算法: 递归的2个应用</title>
