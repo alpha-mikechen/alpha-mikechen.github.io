@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <title>手写服务器 - html、多态、反射、xml解析综合应用 &middot; Mike Chen</title>
+
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/pure-min.css">
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/1.0.0/grids-responsive-min.css">
+  <!--<![endif]-->
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="https://alpha-mikechen.github.io/css/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+  <link rel="stylesheet" href="https://alpha-mikechen.github.io/css/side-menu.css">
+  <!--<![endif]-->
+
+  <link rel="stylesheet" href="https://alpha-mikechen.github.io/css/blackburn.css">
+
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css">
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+ 
+  
+
+  
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/androidstudio.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  <link rel="shortcut icon" href="https://alpha-mikechen.github.ioimg/favicon.ico" type="image/x-icon" />
+
+  
+    
+        <link rel="stylesheet" href="https://alpha-mikechen.github.iocss/my.css">
+    
+  
+  
+    
+        <script src="https://alpha-mikechen.github.iojs/my.js"></script>
+    
+  
+
+</head>
+
+
+<body>
+<div id="layout">
+
+  
+<a href="#menu" id="menuLink" class="menu-link">
+  
+  <span></span>
+</a>
+<div id="menu">
+
+  
+  <a class="pure-menu-heading brand" href="https://alpha-mikechen.github.io/">Mike Chen</a>
+
+
+  <div class="pure-menu">
+    <ul class="pure-menu-list">
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/"><i class='fa fa-home fa-fw'></i>Home</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/post/"><i class='fa fa-list fa-fw'></i>Posts</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/about/"><i class='fa fa-user fa-fw'></i>About</a>
+      
+        </li>
+      
+      
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="https://alpha-mikechen.github.io/contact/"><i class='fa fa-phone fa-fw'></i>Contact</a>
+      
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="pure-menu social">
+  <ul class="pure-menu-list">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="http://weibo.com/*" rel="me" target="_blank"><i class="fa fa-weibo fa-fw"></i>Weibo</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://youtube.com/user/*" rel="me" target="_blank"><i class="fa fa-youtube-square fa-fw"></i>YouTube</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <li class="pure-menu-item">
+      <a class="pure-menu-link" href="https://github.com/alpha-mikechen" rel="me" target="_blank"><i class="fa fa-github-square fa-fw"></i>GitHub</a>
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  </ul>
+</div>
+
+
+  <div>
+  <div class="small-print">
+    <small>&copy; 2018. All rights reserved.</small>
+  </div>
+  <div class="small-print">
+    <small>Built with&nbsp;<a href="https://gohugo.io/" target="_blank">Hugo</a></small>
+    <small>Theme&nbsp;<a href="https://github.com/yoshiharuyamashita/blackburn" target="_blank">Blackburn</a></small>
+  </div>
+</div>
+
+</div>
+
+
+  <div id="main">
+
+
+<div class="header">
+  <h1>手写服务器 - html、多态、反射、xml解析综合应用</h1>
+  <h2></h2>
+</div>
+<div class="content">
+
+  <div class="post-meta">
+
+  <div>
+    <i class="fa fa-calendar fa-fw"></i>
+    <time>08 Aug 2019, 11:02</time>
+  </div>
+
+  
+
+  
+
+  
+
+</div>
+
+  <h2 id="html">html</h2>
+
+<pre><code class="language-html">&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset=&quot;UTF-8&quot;&gt;
+        &lt;title&gt;我的第一个表单&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;pre&gt;
+        method:请求方式 get/post
+                get:数据量小，安全性不高，会将信息显示在地址栏中
+                post:数据量大，安全性相对较高
+        action:请求服务器的路径
+        id:前端区分唯一性
+        name:后端服务器区分唯一性
+        &lt;/pre&gt;
+        &lt;form method=&quot;post&quot; action=&quot;http://localhost:8888/g&quot;&gt;
+            用户名:&lt;input type=&quot;text&quot; name=&quot;uname&quot; id=&quot;name&quot;/&gt;
+            密码:&lt;input type=&quot;password&quot; name=&quot;pwd&quot; id=&quot;pass&quot;/&gt;
+            兴趣:&lt;input type=&quot;checkbox&quot; name=&quot;fav&quot; value=&quot;0&quot;/&gt;篮球
+                &lt;input type=&quot;checkbox&quot; name=&quot;fav&quot; value=&quot;1&quot;/&gt;足球
+                &lt;input type=&quot;checkbox&quot; name=&quot;fav&quot; value=&quot;2&quot;/&gt;羽毛球
+            &lt;input type=&quot;submit&quot; value=&quot;登陆&quot;/&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<h2 id="xml">xml</h2>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;  
+ &lt;web-app&gt;
+ &lt;servlet&gt;
+  &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;Chapters.Chapter_11_HttpServer.MyHTTPServer.Servlet.LoginServlet&lt;/servlet-class&gt;
+ &lt;/servlet&gt;
+ &lt;servlet&gt;
+  &lt;servlet-name&gt;reg&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;Chapters.Chapter_11_HttpServer.MyHTTPServer.Servlet.RegisterServlet&lt;/servlet-class&gt;
+ &lt;/servlet&gt;
+ &lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/log&lt;/url-pattern&gt;
+  &lt;url-pattern&gt;/g&lt;/url-pattern&gt; 
+ &lt;/servlet-mapping&gt;
+ &lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;reg&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/reg&lt;/url-pattern&gt; 
+ &lt;/servlet-mapping&gt;
+ &lt;/web-app&gt;
+</code></pre>
+
+<hr />
+
+<h2 id="程序实现目录">程序实现目录</h2>
+
+<ol>
+<li>main函数, 程序测试入口(传入端口号，解码方式，xml文件路径)</li>
+<li>MyServer(服务器启动)</li>
+<li>implementThread(多线程)</li>
+<li>WebApp, Servlet, LoginServlet, RegisterServlet(利用多态、反射、xml解析, 实现url地址多对一)</li>
+<li>接收请求[解析: 请求方式，url，请求参数(及内部参数)]</li>
+<li>响应[封装响应头(包含正文)的模版]</li>
+<li>xml文件解析</li>
+</ol>
+
+<hr />
+
+<h2 id="程序实现">程序实现</h2>
+
+<h3 id="1-main函数测试入口-传入端口号-解码方式">1.  main函数测试入口(传入端口号，解码方式)</h3>
+
+<pre><code class="language-java">public class Test {
+    public static void main(String[] args) {
+        MyServer test = new MyServer();
+        test.start(8888,&quot;UTF-8&quot;,&quot;xmlPath&quot;);// 传入端口号，编码方式，xml文件路径
+    }
+}
+</code></pre>
+
+<h3 id="2-myserver-服务器启动">2.  MyServer(服务器启动)</h3>
+
+<pre><code class="language-java">class MyServer {
+    private ServerSocket server;// 服务器
+    private Socket client;// 客户端
+    private boolean isShutDown = false;// 线程是否已关闭
+
+    // 服务器启动；传入端口号，编码，xml文件路径
+    public void start(int port, String decode, String xmlPath) {
+        try {
+            server = new ServerSocket(port);
+            while (!isShutDown) {
+                client = server.accept();
+                new Thread(new implementThread(client, decode, xmlPath)).start();
+            }
+        } catch (IOException e) {
+            isShutDown = true;
+        }
+    }
+}
+</code></pre>
+
+<h3 id="3-implementthread-多线程">3.  implementThread(多线程)</h3>
+
+<pre><code class="language-java">public class implementThread implements Runnable{
+    private Request request;
+    private Response response;
+    private String xmlPath;
+
+    public implementThread(Socket client, String decode, String xmlPath) throws IOException {
+        request = new Request(client,decode);
+        response = new Response(client,decode);
+        this.xmlPath = xmlPath;
+    }
+
+    @Override
+    public void run() {
+        try {
+            Servlet sev = new WebApp(xmlPath).getServlet(request.getUrl());
+            if (sev == null){
+                code = 404;
+            }
+            else{
+                sev.service(request,response);
+                response.push(code);
+            }
+        } catch (Exception e) {
+            code = 500;
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+<h3 id="4-webapp-servlet-loginservlet-registerservlet">4.  WebApp, Servlet, LoginServlet, RegisterServlet</h3>
+
+<pre><code class="language-java">// 利用多态、反射、xml解析, 实现url地址多对一
+public class WebApp {
+    private Map &lt;String,String&gt; pattern;
+    private Map &lt;String,String&gt; servlet;
+    
+    // patterns --&gt; name --&gt; class
+    // /g --&gt; login --&gt; LoginServlet
+    // /log --&gt; login --&gt; LoginServlet
+    // /reg --&gt; register --&gt; RegisterServlet
+    public WebApp(String xmlPath) throws Exception {
+        XMLParsing xmlParsing = new XMLParsing(xmlPath);
+        pattern = new HashMap&lt;&gt;();
+        servlet = new HashMap&lt;&gt;();
+
+        List&lt;XMLMapping&gt; xmlMappings = xmlParsing.getXmlMappings();
+        for (XMLMapping mappings:xmlMappings){
+            for (String patterns:mappings.getPatterns()){
+                pattern.put(patterns,mappings.getName());
+            }
+        }
+
+        List &lt;XMLServlet&gt; xmlServlets = xmlParsing.getXmlServlets();
+        for (XMLServlet servlets:xmlServlets){
+            servlet.put(servlets.getName(),servlets.getServletClass());
+        }
+    }
+
+    public Servlet getServlet(String url) throws Exception{
+        // 利用反射, 根据字符串创建完整路径
+        if (url.equals(null)) {
+            return null;
+        }
+        else {
+            Class clz = Class.forName(servlet.get(pattern.get(url)));
+            return (Servlet)clz.getConstructor().newInstance();
+        }
+    }
+}
+
+// 夫类Servlet
+abstract class Servlet {
+    public void service(Request request, Response response) throws Exception {
+        this.doResponse(request,response);
+    }
+
+    public abstract void doResponse(Request request, Response response) throws Exception;
+
+}
+
+// Servlet子类 - 登陆
+class LoginServlet extends Servlet{
+    @Override
+    public void doResponse(Request request, Response response) throws Exception {
+        String uname = request.getSingleValues(&quot;uname&quot;);
+        String pwd = request.getSingleValues(&quot;pwd&quot;);
+        if (login(uname,pwd)){
+            response.createContent(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;登录成功&lt;/title&gt;&quot;);
+            response.createContent(&quot;&lt;/head&gt;&lt;body&gt;&quot;);
+            response.createContent(&quot;欢迎用户: &quot;);
+            response.createContent(request.getSingleValues(&quot;uname&quot;));
+            response.createContent(&quot; 回来&quot;);
+            response.createContent(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
+        }
+        else {
+            response.createContent(&quot;登录失败!&quot;);
+        }
+    }
+
+    public boolean login(String uname, String pwd){
+        if (uname!=null &amp;&amp; pwd!=null){
+            return uname.equals(&quot;admin&quot;) &amp;&amp; pwd.equals(&quot;123456&quot;);
+        }
+        return false;
+    }
+}
+
+// Servlet子类 -  注册
+class RegisterServlet extends Servlet{
+    @Override
+    public void doResponse(Request request, Response response) throws Exception {
+        response.createContent(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;注册&lt;/title&gt;&quot;);
+        response.createContent(&quot;&lt;/head&gt;&lt;body&gt;&quot;);
+        response.createContent(&quot;你的用户名为 &quot;+request.getSingleValues(&quot;uname&quot;));
+        response.createContent(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
+    }
+}
+</code></pre>
+
+<h3 id="5-接收请求-解析请求方式-url-请求参数-及内部参数">5.  接收请求(解析请求方式，url，请求参数(及内部参数))</h3>
+
+<pre><code class="language-java">public class Request {
+    private String requestInfo;// 请求信息
+    private String parameter;//请求参数(uname=123&amp;pwd=456&amp;fav=1)
+    private String url;
+    private String method;// 请求方式(GET或POST)
+    private Map&lt;String, List&lt;String&gt;&gt; parameterMap;// 容器(key=uname, value=123)
+    private final String CRLF = &quot;\r\n&quot;;
+    private InputStream is;
+    private String decode;// 解码方式
+
+    /**
+     * 接收请求信息
+     */
+    public Request(Socket client, String decode) throws IOException {
+        parameter = &quot;&quot;;
+        url = &quot;&quot;;
+        method = &quot;&quot;;
+        parameterMap = new HashMap&lt;&gt;();
+        is = client.getInputStream();
+        this.decode = decode;
+        byte[] data = new byte[20480];
+        int len = is.read(data);
+        requestInfo = new String(data,0,len);
+        analyze();
+        showAll();
+    }
+
+    /**
+     * 分析信息内容
+     * 第一步，获取请求方式，url，请求参数
+     * 第二步，将字符串形式的请求参数存入Map
+     */
+    private void analyze(){
+        if (requestInfo == null){
+            return;
+        }
+        /**
+         * 获取请求方式，url，请求参数
+         * GET / HTTP/1.1
+         * GET /?uname=123&amp;pwd=123 HTTP/1.1
+         * POST / HTTP/1.1
+         */
+        // 获取第一行
+        String firstLine = requestInfo.substring(0,requestInfo.indexOf(CRLF));
+        // 提取请求方式
+        method = firstLine.substring(0,firstLine.indexOf(&quot;/&quot;)).trim();
+        // 提取url
+        String tempUrl = firstLine.substring(firstLine.indexOf(&quot;/&quot;),firstLine.indexOf(&quot;HTTP/&quot;)).trim();
+        // 根据请求方式不同，获取url
+        if (method.equals(&quot;POST&quot;)){
+            url = tempUrl;
+            parameter = requestInfo.substring(requestInfo.lastIndexOf(CRLF)).trim();// 请求参数在正文部分
+        }
+        else if (method.equals(&quot;GET&quot;)){
+            // 判断是否包含参数
+            if (tempUrl.contains(&quot;?&quot;)){
+                String[] urlArray = tempUrl.split(&quot;\\?&quot;);
+                url = urlArray[0];// url在?前
+                parameter = urlArray[1];// 请求参数在?后面
+            }
+            else {
+                url = tempUrl;
+            }
+        }
+
+        /**
+         * 将字符串形式的请求参数存入Map
+         */
+        if (parameter.equals(&quot;&quot;)){
+            return;
+        }
+        else {
+            // 先按&amp;分割字符串
+            StringTokenizer st = new StringTokenizer(parameter,&quot;&amp;&quot;);
+            while (st.hasMoreTokens()){
+                String keyValue = st.nextToken();
+                // 再按=继续分割字符串
+                String[] detailKeyValue = keyValue.split(&quot;=&quot;);
+                // 若等号右边没有值，则拷贝原数组并创建一个长度为2的新数组
+                if (detailKeyValue.length==1){
+                    detailKeyValue = Arrays.copyOf(detailKeyValue,2);
+                    detailKeyValue[1] = null;
+                }
+                // 提取等号左右两边的值，放入Map
+                String key = detailKeyValue[0].trim();
+                String value = decode(detailKeyValue[1].trim(),decode);
+                // 先判断Map中是否已经存在该key
+                if (!parameterMap.containsKey(key)){
+                    parameterMap.put(key,new ArrayList&lt;&gt;());
+                }
+                List values = parameterMap.get(key);
+                values.add(value);
+            }
+        }
+    }
+
+    /**
+     * 获取多个值
+     */
+    public String [] getMultiValues(String key){
+        List&lt;String&gt; values = null;
+        if ((values=parameterMap.get(key))==null){
+            return null;
+        }
+        else {
+            return values.toArray(new String[0]);
+        }
+    }
+
+    /**
+     * 获取单个值
+     */
+    public String getSingleValues(String key){
+        String[] values = getMultiValues(key);
+        if (values == null){
+            return null;
+        }
+        else {
+            return values[0];
+        }
+    }
+
+    /**
+     * 解决乱码
+     */
+    private String decode(String value, String code){
+        try {
+            return java.net.URLDecoder.decode(value,code);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void showAll(){
+        for(String key :parameterMap.keySet()){
+            System.out.println(key+parameterMap.get(key));
+        }
+    }
+}
+</code></pre>
+
+<h3 id="6-响应-制作响应头-包含正文-的模版">6.  响应[制作响应头(包含正文)的模版]</h3>
+
+<pre><code class="language-java">/**
+ * HTTP响应格式
+ * HTTP协议版本，状态码，描述
+ * 响应头
+ * 响应正文
+ *
+ * 请注意每条内容后都要有\r\n
+ * 响应头和正文之间也要有\r\n
+ * Content-Length为正文内容的字节长度！！！
+ */
+class Response{
+    private StringBuilder headInfo;// 存取头信息
+    private StringBuilder content;// 存取正文内容
+    private int len;// 正文长度
+    private String decode;// 解码方式
+    private final String CRLF = &quot;\r\n&quot;;
+    private final String BLANK = &quot; &quot;;
+    private BufferedWriter bw;
+
+    public Response(Socket client, String decode) throws IOException {
+        headInfo = new StringBuilder();
+        content = new StringBuilder();
+        len = 0;
+        this.decode = decode;
+        bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+    }
+    
+    /**
+     * 制作头信息
+     */
+    private void creatHeadInfo(int code){
+        headInfo.append(&quot;HTTP/1.1&quot;).append(BLANK).append(code).append(BLANK);
+        switch (code){
+            case 200:{
+                headInfo.append(&quot;OK&quot;);
+                break;
+            }
+            case 404:{
+                headInfo.append(&quot;NOT FOUND&quot;);
+                break;
+            }
+            case 500:{
+                headInfo.append(&quot;SERVER ERROR&quot;);
+                break;
+            }
+        }
+        headInfo.append(CRLF);
+        headInfo.append(&quot;Server:Me Server/0.0.1&quot;).append(CRLF);
+        headInfo.append(&quot;Date:&quot;).append(new Date()).append(CRLF);
+        headInfo.append(&quot;Content-type:text/html;charset=&quot;).append(decode).append(CRLF);
+        headInfo.append(&quot;Content-Length:&quot;).append(len).append(CRLF);// 注意长度为字节长度
+        headInfo.append(CRLF);// 响应头和正文之间也要有\r\n
+        headInfo.append(content);// 将正文添加在头信息最后
+    }
+
+    /**
+     * 制作正文
+     */
+    public void createContent(String info){
+        if (info!=null) {
+            content.append(info);
+            len += info.getBytes().length;
+        }
+    }
+
+    /**
+     *  推送
+     */
+    public void push(int code) throws IOException {
+        creatHeadInfo(code);
+        bw.write(headInfo.toString());
+        bw.flush();
+        bw.close();
+    }
+}
+</code></pre>
+
+<h3 id="7-xml文件解析">7.  xml文件解析</h3>
+
+<pre><code class="language-java">public class XMLParsing {
+    private List &lt;XMLServlet&gt; xmlServlets;
+    private List &lt;XMLMapping&gt; xmlMappings;
+
+    public XMLParsing(String xmlPath) throws Exception {
+        //SAX解析
+        //1、获取解析工厂
+        SAXParserFactory factory=SAXParserFactory.newInstance();
+        //2、从解析工厂获取解析器
+        SAXParser parse =factory.newSAXParser();
+        //3、编写处理器
+        //4、加载文档 Document 注册处理器
+        XMLHandler handler=new XMLHandler();
+        //5、解析
+        parse.parse(xmlPath,handler);
+
+        //6、获取数据
+        xmlServlets = handler.getXmlServlets();
+        xmlMappings = handler.getXmlMappings();
+    }
+
+    public List&lt;XMLServlet&gt; getXmlServlets() {
+        return xmlServlets;
+    }
+
+    public List&lt;XMLMapping&gt; getXmlMappings() {
+        return xmlMappings;
+    }
+}
+
+class XMLHandler extends DefaultHandler{
+    private List &lt;XMLServlet&gt; xmlServlets = new ArrayList&lt;&gt;();
+    private List &lt;XMLMapping&gt; xmlMappings = new ArrayList&lt;&gt;();
+
+    private XMLServlet xmlServlet;
+    private XMLMapping xmlMapping;
+
+    private String tag;
+    private boolean isMapping;
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        if (qName!=null){
+            tag = qName;
+            if (qName.equals(&quot;servlet&quot;)) {
+                xmlServlet = new XMLServlet();
+                isMapping = false;
+            }
+            else if (qName.equals(&quot;servlet-mapping&quot;)) {
+                xmlMapping = new XMLMapping();
+                isMapping = true;
+            }
+        }
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        String content = new String(ch,start,length).trim();
+        if (tag!=null){
+            if (isMapping){
+                if (tag.equals(&quot;servlet-name&quot;)){
+                    xmlMapping.setName(content);
+                }
+                else if (tag.equals(&quot;url-pattern&quot;)){
+                    xmlMapping.addPatterns(content);
+                }
+            }
+            else {
+                if (tag.equals(&quot;servlet-name&quot;)){
+                    xmlServlet.setName(content);
+                }
+                else if (tag.equals(&quot;servlet-class&quot;)){
+                    xmlServlet.setServletClass(content);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        if (qName!=null){
+            if (qName.equals(&quot;servlet&quot;)){
+                xmlServlets.add(xmlServlet);
+            }
+            else if (qName.equals(&quot;servlet-mapping&quot;)){
+                xmlMappings.add(xmlMapping);
+            }
+        }
+        tag = null;
+    }
+
+    public List&lt;XMLServlet&gt; getXmlServlets() {
+        return xmlServlets;
+    }
+
+    public List&lt;XMLMapping&gt; getXmlMappings() {
+        return xmlMappings;
+    }
+}
+
+/**
+ * &lt;servlet&gt;
+ *   &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+ *Chapter_11_HttpSerChapter_11_HttpServer.MyHTTPServer.Servlet.LoginServletvlet&gt;
+ *  &lt;servlet&gt;
+ *   &lt;servlet-name&gt;reg&lt;/servlet-name&gt;
+ *Chapters.Chapter_11_HttpServerttpServer{
+    private String name;
+    private String servletClass;
+
+    public XMLServlet() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getServletClass() {
+        return servletClass;
+    }
+
+    public void setServletClass(String servletClass) {
+        this.servletClass = servletClass;
+    }
+}
+
+/**
+ * &lt;servlet-mapping&gt;
+ *   &lt;servlet-name&gt;login&lt;/servlet-name&gt;
+ *   &lt;url-pattern&gt;/log&lt;/url-pattern&gt;
+ *   &lt;url-pattern&gt;/g&lt;/url-pattern&gt; 
+ *  &lt;/servlet-mapping&gt;
+ *  &lt;servlet-mapping&gt;
+ *   &lt;servlet-name&gt;reg&lt;/servlet-name&gt;
+ *   &lt;url-pattern&gt;/reg&lt;/url-pattern&gt; 
+ *  &lt;/servlet-mapping&gt;
+ */
+class XMLMapping{
+    private String name;
+    private Set &lt;String&gt; patterns;
+
+    public XMLMapping() {
+        patterns = new HashSet&lt;&gt;();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set&lt;String&gt; getPatterns() {
+        return patterns;
+    }
+
+    public void addPatterns(String url){
+        this.patterns.add(url);
+    }
+}
+</code></pre>
+
+<hr />
+
+  
+<div class="prev-next-post pure-g">
+  <div class="pure-u-1-24" style="text-align: left;">
+    
+    <a href="https://alpha-mikechen.github.io/post/webxml/"><i class="fa fa-chevron-left"></i></a>
+    
+  </div>
+  <div class="pure-u-10-24">
+    
+    <nav class="prev">
+      <a href="https://alpha-mikechen.github.io/post/webxml/">XML解析-SAX方式</a>
+    </nav>
+    
+  </div>
+  <div class="pure-u-2-24">
+    &nbsp;
+  </div>
+  <div class="pure-u-10-24">
+    
+  </div>
+  <div class="pure-u-1-24" style="text-align: right;">
+    
+  </div>
+</div>
+
+
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = 'Your Disqus shortname';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</div>
+
+</div>
+</div>
+<script src="https://alpha-mikechen.github.iojs/ui.js"></script>
+<script src="https://alpha-mikechen.github.iojs/menus.js"></script>
+
+
+<script>
+  
+  if (window.location.hostname != "localhost") {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'Your Google Analytics tracking ID', 'auto');
+    ga('send', 'pageview');
+  }
+</script>
+
+
+
+
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="\/\/analytics.example.com\/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId',  2 ]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.example.com/piwik.php?idsite=2" style="border:0;" alt="" /></p></noscript>
+
+
+
+</body>
+</html>
+

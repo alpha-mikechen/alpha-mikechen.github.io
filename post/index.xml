@@ -12,29 +12,20 @@
     
     
     <item>
-      <title>Java初级阶段-手写服务器</title>
-      <link>https://alpha-mikechen.github.io/post/myserver/</link>
+      <title>手写服务器 - html、多态、反射、xml解析综合应用</title>
+      <link>https://alpha-mikechen.github.io/post/readme/</link>
       <pubDate>Thu, 08 Aug 2019 11:02:26 +0800</pubDate>
       
-      <guid>https://alpha-mikechen.github.io/post/myserver/</guid>
+      <guid>https://alpha-mikechen.github.io/post/readme/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>WebXML解析</title>
+      <title>XML解析-SAX方式</title>
       <link>https://alpha-mikechen.github.io/post/webxml/</link>
       <pubDate>Thu, 08 Aug 2019 10:25:15 +0800</pubDate>
       
       <guid>https://alpha-mikechen.github.io/post/webxml/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>XML解析—SAX方式</title>
-      <link>https://alpha-mikechen.github.io/post/xmltest/</link>
-      <pubDate>Thu, 08 Aug 2019 10:22:46 +0800</pubDate>
-      
-      <guid>https://alpha-mikechen.github.io/post/xmltest/</guid>
       <description></description>
     </item>
     
