@@ -256,7 +256,7 @@
         id:前端区分唯一性
         name:后端服务器区分唯一性
         &lt;/pre&gt;
-        &lt;form method=&quot;get&quot; action=&quot;http://localhost:8888/&quot;&gt;
+        &lt;form method=&quot;post&quot; action=&quot;http://localhost:8888/g&quot;&gt;
             用户名:&lt;input type=&quot;text&quot; name=&quot;uname&quot; id=&quot;name&quot;/&gt;
             密码:&lt;input type=&quot;password&quot; name=&quot;pwd&quot; id=&quot;pass&quot;/&gt;
             兴趣:&lt;input type=&quot;checkbox&quot; name=&quot;fav&quot; value=&quot;0&quot;/&gt;篮球
@@ -270,22 +270,27 @@
 
 <hr />
 
-<h2 id="程序实现">程序实现</h2>
+<h2 id="程序实现目录">程序实现目录</h2>
 
-<p>目录
-1.  main函数测试入口(传入端口号，解码方式)
-2.  MyServer(服务器启动)
-3.  多线程
-4.  Servlet(提供响应正文)
-5.  接收请求(解析请求方式，url，请求参数(及内部参数))
-6.  响应(制作响应头(包含正文)的模版)</p>
+<ol>
+<li>main函数, 程序测试入口(传入端口号，解码方式)</li>
+<li>MyServer(服务器启动)</li>
+<li>implementThread(多线程)</li>
+<li>WebApp, Servlet, LoginServlet, RegisterServlet(发生多态, 根据不同的url地址实现不同的功能)</li>
+<li>接收请求[解析: 请求方式，url，请求参数(及内部参数)]</li>
+<li>响应[封装响应头(包含正文)的模版]</li>
+</ol>
+
+<hr />
+
+<h2 id="程序实现">程序实现</h2>
 
 <h3 id="1-main函数测试入口-传入端口号-解码方式">1.  main函数测试入口(传入端口号，解码方式)</h3>
 
 <pre><code class="language-java">public class Test {
     public static void main(String[] args) {
         MyServer test = new MyServer();
-        test.start(8888,&quot;UTF-8&quot;);
+        test.start(8888,&quot;UTF-8&quot;);// 传入端口号，编码方式
     }
 }
 </code></pre>
@@ -306,13 +311,13 @@
                 new Thread(new implementThread(client, decode)).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            isShutDown = true;
         }
     }
 }
 </code></pre>
 
-<h3 id="3-多线程">3.  多线程</h3>
+<h3 id="3-implementthread-多线程">3.  implementThread(多线程)</h3>
 
 <pre><code class="language-java">public class implementThread implements Runnable{
     private Request request;
@@ -326,26 +331,98 @@
     @Override
     public void run() {
         try {
-            new Servlet().service(request,response);
-            response.push(200);
-        } catch (IOException e) {
+            Servlet sev = new WebApp().getServlet(request.getUrl());
+            if (sev == null){
+                code = 404;
+            }
+            else{
+                sev.service(request,response);
+                response.push(code);
+            }
+        } catch (Exception e) {
+            code = 500;
             e.printStackTrace();
         }
-
     }
 }
 </code></pre>
 
-<h3 id="4-servlet-提供响应正文">4.  Servlet(提供响应正文)</h3>
+<h3 id="4-webapp-servlet-loginservlet-registerservlet">4.  WebApp, Servlet, LoginServlet, RegisterServlet</h3>
 
-<pre><code class="language-java">public class Servlet {
-    public void service(Request request, Response response) throws IOException {
-        response.createContent(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;HTTP响应实例&lt;/title&gt;&quot;);
+<pre><code class="language-java">// 发生多态, 根据不同的url地址实现不同的功能
+public class WebApp {
+    private Map &lt;String,String&gt; pattern;
+    private Map &lt;String,Servlet&gt; servlet;
+    
+    // /g --&gt; login --&gt; LoginServlet
+    // /log --&gt; login --&gt; LoginServlet
+    // /reg --&gt; register --&gt; RegisterServlet
+    public WebApp() {
+        pattern = new HashMap&lt;&gt;();
+        pattern.put(&quot;/g&quot;,&quot;login&quot;);
+        pattern.put(&quot;/log&quot;,&quot;login&quot;);
+        pattern.put(&quot;/reg&quot;,&quot;register&quot;);
+
+        servlet = new HashMap&lt;&gt;();
+        servlet.put(&quot;login&quot;,new LoginServlet());
+        servlet.put(&quot;register&quot;,new RegisterServlet());
+    }
+
+    public Servlet getServlet (String url){
+        if (url.equals(null)){
+            return null;
+        }
+        else {
+            return servlet.get(pattern.get(url));
+        }
+    }
+}
+
+// 夫类Servlet
+abstract class Servlet {
+    public void service(Request request, Response response) throws Exception {
+        this.doResponse(request,response);
+    }
+
+    public abstract void doResponse(Request request, Response response) throws Exception;
+
+}
+
+// Servlet子类 - 登陆
+class LoginServlet extends Servlet{
+    @Override
+    public void doResponse(Request request, Response response) throws Exception {
+        String uname = request.getSingleValues(&quot;uname&quot;);
+        String pwd = request.getSingleValues(&quot;pwd&quot;);
+        if (login(uname,pwd)){
+            response.createContent(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;登录成功&lt;/title&gt;&quot;);
+            response.createContent(&quot;&lt;/head&gt;&lt;body&gt;&quot;);
+            response.createContent(&quot;欢迎用户: &quot;);
+            response.createContent(request.getSingleValues(&quot;uname&quot;));
+            response.createContent(&quot; 回来&quot;);
+            response.createContent(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
+        }
+        else {
+            response.createContent(&quot;登录失败!&quot;);
+        }
+    }
+
+    public boolean login(String uname, String pwd){
+        if (uname!=null &amp;&amp; pwd!=null){
+            return uname.equals(&quot;admin&quot;) &amp;&amp; pwd.equals(&quot;123456&quot;);
+        }
+        return false;
+    }
+}
+
+// Servlet子类 -  注册
+class RegisterServlet extends Servlet{
+    @Override
+    public void doResponse(Request request, Response response) throws Exception {
+        response.createContent(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;注册&lt;/title&gt;&quot;);
         response.createContent(&quot;&lt;/head&gt;&lt;body&gt;&quot;);
-        response.createContent(&quot;欢迎用户: &quot;);
-        response.createContent(request.getSingleValues(&quot;uname&quot;));
-        response.createContent(&quot; 回来&quot;);
-        response.createContent(&quot;&lt;/body&gt;&lt;/html&quot;);
+        response.createContent(&quot;你的用户名为 &quot;+request.getSingleValues(&quot;uname&quot;));
+        response.createContent(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
     }
 }
 </code></pre>
@@ -399,7 +476,7 @@
         // 提取请求方式
         method = firstLine.substring(0,firstLine.indexOf(&quot;/&quot;)).trim();
         // 提取url
-        String tempUrl = firstLine.substring(firstLine.indexOf(&quot;/&quot;),firstLine.indexOf(&quot;HTTP/&quot;));
+        String tempUrl = firstLine.substring(firstLine.indexOf(&quot;/&quot;),firstLine.indexOf(&quot;HTTP/&quot;)).trim();
         // 根据请求方式不同，获取url
         if (method.equals(&quot;POST&quot;)){
             url = tempUrl;
@@ -494,7 +571,7 @@
 }
 </code></pre>
 
-<h3 id="6-响应-制作响应头-包含正文-的模版">6.  响应(制作响应头(包含正文)的模版)</h3>
+<h3 id="6-响应-制作响应头-包含正文-的模版">6.  响应[制作响应头(包含正文)的模版]</h3>
 
 <pre><code class="language-java">/**
  * HTTP响应格式
@@ -555,9 +632,12 @@ class Response{
      * 制作正文
      */
     public void createContent(String info){
-        content.append(info);
-        len += (info).getBytes().length;
+        if (info!=null) {
+            content.append(info);
+            len += info.getBytes().length;
+        }
     }
+
     /**
      *  推送
      */
